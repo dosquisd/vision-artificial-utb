@@ -4,6 +4,26 @@ Este repositorio es únicamente utilizado para guardar todas las tareas, proyect
 
 La materia es dada por el profesor [Fernando Quintero](https://github.com/fquinterov), y el repositorio oficial del curso está [aquí](https://github.com/agmarrugo/computer-vision-utb).
 
+## Exportar
+
+Para exportar los archivos a pdf o html (por el momento) se puede hacer desde bash o python. Se creó un cli para ambos lenguajes donde se utilizarían de manera similar.
+
+**En Python.**
+
+``` console
+python3 export_to.py -n <notebook_file.ipynb> -f <html/pdf> -v
+```
+
+El último parámetro `-v` es utilizado como alias de `--verbose`, `-n` para `--notebook_file` y `-f` para `--format`.
+
+**En bash.**
+
+``` bash
+bash export_to.sh -n <notebook_file.ipynb> -f <html/pdf> -v
+```
+
+A diferencia que en Python, aquí `-n`, `-f` y `-v` no son alias de nada, es decir, representan lo mismo que lo antes mostrado, pero no se pueden utilizar como `--format`, entre otros.
+
 <!-- 
 Nota para mi yo del fúturo, y quizás una manera de expresar mis pensamientos, realmente dudo mucho si alguien llegara a leer esto.
 Sé que a este punto en el que me encuentro acerca de mi formación, es normal sentir muchas dudas e incertidumbres del fúturo,
