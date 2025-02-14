@@ -48,7 +48,7 @@ def main(notebook_file: str, format: AllowedModes = "pdf", verbose: bool = False
         f.write(body)
 
     if verbose:
-        click.echo(f"Notebook exported to: {perf_counter() - t0:.5f} seconds")
+        click.echo(f"Notebook exported in {perf_counter() - t0:.5f} seconds")
 
     click.echo(f"Notebook exported to {output_file}")
 
