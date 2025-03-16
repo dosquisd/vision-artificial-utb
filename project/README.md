@@ -14,6 +14,8 @@ Como sabemos que no es algo nuevo, hemos consultado algunas referencias en los s
 * [https://paperswithcode.com/dataset/dsbi](https://paperswithcode.com/dataset/dsbi).
 * [https://ieeexplore.ieee.org/document/7065649](https://ieeexplore.ieee.org/document/7065649).
 * [https://www.kaggle.com/datasets/shanks0465/braille-character-dataset](https://www.kaggle.com/datasets/shanks0465/braille-character-dataset).
+* [https://www.scidb.cn/en/detail?dataSetId=b1df1a601acc47a6984aafa8f3ab8e92](https://www.scidb.cn/en/detail?dataSetId=b1df1a601acc47a6984aafa8f3ab8e92).
+* [https://universe.roboflow.com/search?q=class%3Abraille](https://universe.roboflow.com/search?q=class%3Abraille).
 
 ## Estructura
 
