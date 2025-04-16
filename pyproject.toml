@@ -16,4 +16,5 @@ dependencies = [
     "scikit-image>=0.25.1",
     "scikit-learn>=1.6.1",
     "seaborn>=0.13.2",
+    "ultralytics>=8.3.23",
 ]
