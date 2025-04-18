@@ -1,13 +1,9 @@
 # Data
 
-Todos los datos fueron obtenidos de: [https://www.scidb.cn/en/detail?dataSetId=b1df1a601acc47a6984aafa8f3ab8e92](https://www.scidb.cn/en/detail?dataSetId=b1df1a601acc47a6984aafa8f3ab8e92). En concreto, solo se están tomando las imagenes de `segment_label`, los `.json` los estamos ignorando porque no sabemos qué tanta compatibilidad haya con labelImg y YOLO.
+Todos los datos fueron obtenidos de: [https://www.scidb.cn/en/detail?dataSetId=b1df1a601acc47a6984aafa8f3ab8e92](https://www.scidb.cn/en/detail?dataSetId=b1df1a601acc47a6984aafa8f3ab8e92). En concreto, solo se están tomando las imagenes de `character_label/voc-data`. Los datos fueron directamente importados a la carpeta [raw](./raw/), teniendo en cuenta las distinciones entre `train` y `test` que ahí se mencionan.
 
-Los datos están separados por entrenamiento y testo, en las carpetas [train](./train/) y [test](./test/), respectivamente.
-
-Los etiquetamientos se hacen utilizando el paquete de `labelImg`, utilizando por ejemplo, el comando: `labelImg ./data/train/`, para luego cambiar el formato de guardado a YOLO, como se ve en la imagen de abajo. El nombre de la clase que se utilizará es "Character" siempre. Luego, las etiquetas son guardadas en las carpetas llamadas `labels` dependiendo si se está trabajando en `train` o `test`.
-
-![labelImg-YOLO](../figures/labelimg_capture.png)
+El formato de las anotaciones de las imagenes fue PascalVOC, lo cual significa que utilizaron .xml, formato el cual también soporta `labelImg`. Realmente, no debería hacer falta utilizar `labelImg`, pero en caso de hacer una corrección, se puede ejecutar perfectamente con el comando `labelImg ./data`, o ser más especifico con los directorios si así se desea.
 
 ## XML
 
-En caso de haber utilizado el formato de guardado XML o "PascalVOC", se puede utilizar el archivo [xml_to_txt_yolo.py](./xml_to_txt_yolo.py) para convertir los archivos que están guardados en formato XML a TXT en formato yolo.
+Probablemente sea necesario hacer la conversión en los formatos de guardado de las anotaciones, de PascalVOC (.xml) a YOLO (.txt), por tanto, está el script [xml_to_txt_yolo.py](./xml_to_txt_yolo.py) para facilitar la tarea.
