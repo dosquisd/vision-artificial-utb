@@ -2,9 +2,9 @@
 
 Todos los datos fueron obtenidos de: [https://www.scidb.cn/en/detail?dataSetId=b1df1a601acc47a6984aafa8f3ab8e92](https://www.scidb.cn/en/detail?dataSetId=b1df1a601acc47a6984aafa8f3ab8e92). En concreto, solo se están tomando las imagenes de `segment_label`, los `.json` los estamos ignorando porque no sabemos qué tanta compatibilidad haya con labelImg y YOLO.
 
-En la carpeta [raw](./raw/) se encuentra puras imagenes de donde se sacaran los vectores respectivos para utilizar yolo finalmente. Dentro de esta carpeta están divididas entre `train` y `test` que son las imagenes usadas en entrenamiento y testing, respectivamente. Luego, en [processed](./processed/) se encuentra los vectores que luego son usados para YOLO, y como bien se mencionó antes, también está separado por `train` y `test`.
+Los datos están separados por entrenamiento y testo, en las carpetas [train](./train/) y [test](./test/), respectivamente.
 
-Los etiquetamientos se hacen utilizando el paquete de `labelImg`, utilizando por ejemplo, el comando: `labelImg ./data/raw/`, para luego cambiar el formato de guardado a YOLO, como se ve en la imagen de abajo. El nombre de la clase que se utilizará es "Character" siempre.
+Los etiquetamientos se hacen utilizando el paquete de `labelImg`, utilizando por ejemplo, el comando: `labelImg ./data/train/`, para luego cambiar el formato de guardado a YOLO, como se ve en la imagen de abajo. El nombre de la clase que se utilizará es "Character" siempre. Luego, las etiquetas son guardadas en las carpetas llamadas `labels` dependiendo si se está trabajando en `train` o `test`.
 
 ![labelImg-YOLO](../figures/labelimg_capture.png)
 
