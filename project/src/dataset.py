@@ -66,6 +66,8 @@ def resize_images_and_annotations(input_dir: str, output_dir: str, target_size: 
 
             # Actualizar coordenadas de cada objeto
             for obj in root.iter('object'):
+                obj.find('name').text = '0'  # Actualizar nombre de objeto (todos tienen el mismo nombre - 0: Character)
+
                 bbox = obj.find('bndbox')
                 xmin = int(bbox.find('xmin').text)
                 ymin = int(bbox.find('ymin').text)

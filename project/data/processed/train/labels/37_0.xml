@@ -7,7 +7,7 @@
 		<depth>3</depth>
 	</size>
 	<object>
-		<name>51</name>
+		<name>0</name>
 		<pose>Rear</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -19,7 +19,7 @@
 		</bndbox>
 	</object>
 	<object>
-		<name>43</name>
+		<name>0</name>
 		<pose>Rear</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -31,7 +31,7 @@
 		</bndbox>
 	</object>
 	<object>
-		<name>13</name>
+		<name>0</name>
 		<pose>Rear</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -43,7 +43,7 @@
 		</bndbox>
 	</object>
 	<object>
-		<name>52</name>
+		<name>0</name>
 		<pose>Rear</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -55,7 +55,7 @@
 		</bndbox>
 	</object>
 	<object>
-		<name>10</name>
+		<name>0</name>
 		<pose>Rear</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
