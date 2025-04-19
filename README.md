@@ -4,6 +4,50 @@ Este repositorio es únicamente utilizado para guardar todas las tareas, proyect
 
 La materia es dada por el profesor [Fernando Quintero](https://github.com/fquinterov), y el repositorio oficial del curso está [aquí](https://github.com/agmarrugo/computer-vision-utb).
 
+## Instalar
+
+Todas las dependencias del proyecto están en el archivo [pyproject.toml](./pyproject.toml), para instalar todo, es necesario haber instalado previamente el manejador de paquetes [uv](https://docs.astral.sh/uv/).
+
+Para instalar todas las dependencias del proyecto, se puede ejecutar el siguiente comando:
+
+``` console
+uv sync
+```
+
+Y, luego activar el entorno virtual.
+
+Sistemas basados en UNIX (Linux y MacOS):
+
+``` console
+source .venv/bin/activate
+```
+
+Windows:
+
+``` console
+.\.venv\Scripts\activate
+```
+
+Dentro de las dependencias del proyecto, existe el paquete `onnxruntime`, paquete el cual se puede instalar con enfoque CPU o GPU. Para eso, se pueden ejecutar los comandos de esta manera:
+
+CPU:
+
+``` console
+uv pip install .[cpu]
+```
+
+GPU:
+
+``` console
+uv pip install .[gpu]
+```
+
+Un comentario extra es que, en windows el paquete pyqt5 no se instala correctamente, por lo que, es necesario instalarlo manualmente así:
+
+``` console
+uv pip install PyQt5
+```
+
 ## Exportar
 
 Para exportar los archivos a pdf o html (por el momento) se puede hacer desde bash o python. Se creó un cli para ambos lenguajes donde se utilizarían de manera similar.
