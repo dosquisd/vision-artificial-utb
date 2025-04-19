@@ -1,0 +1,33 @@
+<annotation>
+	<folder>Natural_Braille_Character</folder>
+	<filename>554_1</filename>
+	<size>
+		<width>640</width>
+		<height>640</height>
+		<depth>3</depth>
+	</size>
+	<object>
+		<name>35</name>
+		<pose>Rear</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>27</xmin>
+			<ymin>169</ymin>
+			<xmax>247</xmax>
+			<ymax>492</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>1</name>
+		<pose>Rear</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>330</xmin>
+			<ymin>134</ymin>
+			<xmax>536</xmax>
+			<ymax>430</ymax>
+		</bndbox>
+	</object>
+</annotation>

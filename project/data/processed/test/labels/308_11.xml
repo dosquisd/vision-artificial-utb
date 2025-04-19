@@ -1,0 +1,33 @@
+<annotation>
+	<folder>Natural_Braille_Character</folder>
+	<filename>308_11</filename>
+	<size>
+		<width>640</width>
+		<height>640</height>
+		<depth>3</depth>
+	</size>
+	<object>
+		<name>56</name>
+		<pose>Rear</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>49</xmin>
+			<ymin>147</ymin>
+			<xmax>295</xmax>
+			<ymax>484</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>1</name>
+		<pose>Rear</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>336</xmin>
+			<ymin>147</ymin>
+			<xmax>549</xmax>
+			<ymax>484</ymax>
+		</bndbox>
+	</object>
+</annotation>

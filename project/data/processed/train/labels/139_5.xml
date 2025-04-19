@@ -1,0 +1,21 @@
+<annotation>
+	<folder>Natural_Braille_Character</folder>
+	<filename>139_5</filename>
+	<size>
+		<width>640</width>
+		<height>640</height>
+		<depth>3</depth>
+	</size>
+	<object>
+		<name>42</name>
+		<pose>Rear</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>152</xmin>
+			<ymin>35</ymin>
+			<xmax>481</xmax>
+			<ymax>587</ymax>
+		</bndbox>
+	</object>
+</annotation>

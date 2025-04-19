@@ -1,0 +1,21 @@
+<annotation>
+	<folder>Natural_Braille_Character</folder>
+	<filename>111_7</filename>
+	<size>
+		<width>640</width>
+		<height>640</height>
+		<depth>3</depth>
+	</size>
+	<object>
+		<name>43</name>
+		<pose>Rear</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>158</xmin>
+			<ymin>34</ymin>
+			<xmax>482</xmax>
+			<ymax>584</ymax>
+		</bndbox>
+	</object>
+</annotation>
