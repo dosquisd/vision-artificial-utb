@@ -1,0 +1,7 @@
+# First version of custom dataset
+path: ./data/processed
+train: train/images
+val: test/images
+
+names:
+  0: Character
