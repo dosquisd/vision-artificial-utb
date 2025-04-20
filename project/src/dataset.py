@@ -4,6 +4,7 @@ import shutil
 import os
 import xml.etree.ElementTree as ET
 import click
+from src.config import settings
 
 IMAGE_DIR: str = 'images'
 ANNOTATIONS_DIR: str = 'labels'
@@ -12,8 +13,9 @@ ANNOTATIONS_DIR: str = 'labels'
 @click.command()
 @click.option('--input_dir', type=str, required=True, help='Directorio de entrada con imágenes y anotaciones')
 @click.option('--output_dir', type=str, required=True, help='Directorio de salida para imágenes y anotaciones redimensionadas')
-@click.option('--target_size', type=(int, int), default=(640, 640), help='Tamaño objetivo para las imágenes (ancho, alto)')
-def resize_images_and_annotations(input_dir: str, output_dir: str, target_size: tuple[int] = (640, 640)):
+def resize_images_and_annotations(input_dir: str, output_dir: str):
+    target_size = settings.PROCESSED_IMAGE_SHAPE
+
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(os.path.join(output_dir, IMAGE_DIR), exist_ok=True)
     os.makedirs(os.path.join(output_dir, ANNOTATIONS_DIR), exist_ok=True)
