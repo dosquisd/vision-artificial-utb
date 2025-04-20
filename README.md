@@ -28,20 +28,6 @@ Windows:
 .\.venv\Scripts\activate
 ```
 
-Dentro de las dependencias del proyecto, existe el paquete `onnxruntime`, paquete el cual se puede instalar con enfoque CPU o GPU. Para eso, se pueden ejecutar los comandos de esta manera:
-
-CPU:
-
-``` console
-uv pip install .[cpu]
-```
-
-GPU:
-
-``` console
-uv pip install .[gpu]
-```
-
 Un comentario extra es que, en windows el paquete pyqt5 no se instala correctamente, por lo que, es necesario instalarlo manualmente así:
 
 ``` console
