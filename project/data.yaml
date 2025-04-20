@@ -1,5 +1,5 @@
 # First version of custom dataset
-path: /home/juand/Documents/vscode/semestre7/vision_artificial/project/data/processed
+path: ./data/processed
 train: train/images
 val: test/images
 
