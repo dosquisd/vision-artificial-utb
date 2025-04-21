@@ -2,11 +2,13 @@ task: detect
 mode: train
 model: ../models/yolo11n.pt
 data: ../data.yaml
-epochs: 1000
+epochs: 100
 time: null
 patience: 100
 batch: 16
-imgsz: 640
+imgsz:
+- 640
+- 640
 save: true
 save_period: -1
 cache: false
@@ -36,7 +38,6 @@ dropout: 0.0
 val: true
 split: val
 save_json: false
-save_hybrid: false
 conf: null
 iou: 0.7
 max_det: 300
@@ -68,7 +69,7 @@ int8: false
 dynamic: false
 simplify: true
 opset: null
-workspace: 4
+workspace: null
 nms: false
 lr0: 0.01
 lrf: 0.01
@@ -82,7 +83,6 @@ cls: 0.5
 dfl: 1.5
 pose: 12.0
 kobj: 1.0
-label_smoothing: 0.0
 nbs: 64
 hsv_h: 0.015
 hsv_s: 0.7
@@ -101,7 +101,6 @@ copy_paste: 0.0
 copy_paste_mode: flip
 auto_augment: randaugment
 erasing: 0.4
-crop_fraction: 1.0
 cfg: null
 tracker: botsort.yaml
-save_dir: /home/juand/Documents/vscode/semestre7/vision_artificial/runs/detect/train
+save_dir: /home/juand/Documents/vscode/semestre7/vision_artificial/project/models/runs/detect/train
