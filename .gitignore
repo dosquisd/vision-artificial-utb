@@ -11,3 +11,8 @@ wheels/
 
 # Visual Studio Code
 .vscode/
+
+# Temporal files
+.*
+tmp.*
+tmp/
