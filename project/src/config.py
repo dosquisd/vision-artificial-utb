@@ -20,5 +20,13 @@ class Settings(BaseSettings):
     def PROCESSED_IMAGE_SHAPE(self) -> tuple[int, int]:
         return self.PROCESSED_IMAGE_WIDTH, self.PROCESSED_IMAGE_HEIGHT
 
+    PROCESSED_CHARACTER_HEIGHT: int = 125
+    PROCESSED_CHARACTER_WIDTH: int = 80
+
+    @computed_field
+    @property
+    def PROCESSED_CHARACTER_SHAPE(self) -> tuple[int, int]:
+        return self.PROCESSED_CHARACTER_HEIGHT, self.PROCESSED_CHARACTER_WIDTH
+
 
 settings = Settings()
