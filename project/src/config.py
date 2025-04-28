@@ -25,8 +25,8 @@ class Settings(BaseSettings):
         env_file=".env", env_ignore_empty=True, extra="ignore"
     )
 
-    PROCESSED_IMAGE_WIDTH: int = 640
-    PROCESSED_IMAGE_HEIGHT: int = 640
+    PROCESSED_IMAGE_WIDTH: int
+    PROCESSED_IMAGE_HEIGHT: int
 
     @computed_field
     @property
@@ -39,8 +39,8 @@ class Settings(BaseSettings):
         """
         return self.PROCESSED_IMAGE_WIDTH, self.PROCESSED_IMAGE_HEIGHT
 
-    PROCESSED_CHARACTER_HEIGHT: int = 125
-    PROCESSED_CHARACTER_WIDTH: int = 80
+    PROCESSED_CHARACTER_HEIGHT: int
+    PROCESSED_CHARACTER_WIDTH: int
 
     @computed_field
     @property
