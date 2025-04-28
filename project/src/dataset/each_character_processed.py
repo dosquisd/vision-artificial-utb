@@ -23,8 +23,20 @@ from src.filter_characters import main_filter
     default="png,jpg,jpeg",
     help="Extensiones de archivo permitidas (separadas por comas). Por defecto: png,jpg,jpeg",
 )
+@click.option(
+    "--radius",
+    type=float,
+    default=1.0,
+    help="Radio del filtro de máscara de desenfoque (unsharp mask). Por defecto: 1.0",
+)
+@click.option(
+    "--amount",
+    type=float,
+    default=1.0,
+    help="Cantidad del filtro de máscara de desenfoque (unsharp mask). Por defecto: 1.0",
+)
 def get_each_character_processed(
-    input_dir: str, save_dir: str, allowed_extensions: str
+    input_dir: str, save_dir: str, allowed_extensions: str, radius: float, amount: float
 ) -> None:
     """
     Process braille character images by applying filters and save them to a new directory.
@@ -58,7 +70,7 @@ def get_each_character_processed(
 
     for image_path in images_path:
         basename = os.path.basename(str(image_path))
-        img = main_filter(str(image_path))
+        img = main_filter(str(image_path), radius=radius, amount=amount)
         cv2.imwrite(os.path.join(save_dir, basename), img)
 
 
