@@ -33,7 +33,7 @@ def main_filter(image_path: str, radius: float, amount: float) -> cv2.Mat:
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # Hacer un resize
-    gray = cv2.resize(gray, settings.PROCESSED_IMAGE_SHAPE[::-1])
+    gray = cv2.resize(gray, settings.PROCESSED_CHARACTER_SHAPE[::-1])
 
     # Aplicar más filtros aquí
     gray = filters.median(gray, disk(3))
