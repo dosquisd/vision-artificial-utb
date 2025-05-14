@@ -12,6 +12,7 @@ from pathlib import Path
 
 import cv2
 from src.filter_characters import main_filter
+from src.config import settings
 
 
 @click.command()
@@ -20,7 +21,7 @@ from src.filter_characters import main_filter
 @click.option(
     "--allowed_extensions",
     type=str,
-    default="png,jpg,jpeg",
+    default="",
     help="Extensiones de archivo permitidas (separadas por comas). Por defecto: png,jpg,jpeg",
 )
 @click.option(
@@ -59,7 +60,10 @@ def get_each_character_processed(
     if not os.path.exists(input_dir):
         raise FileNotFoundError(f"La ruta de entrada: {input_dir} no existe.")
 
-    allowed_extensions = allowed_extensions.strip().split(",")
+    if not len(allowed_extensions):
+        allowed_extensions = settings.VALID_IMAGES_EXTENSIONS
+    else:
+        allowed_extensions = allowed_extensions.strip().split(",")
 
     input_dir: Path = Path(input_dir)
     if input_dir.is_dir():

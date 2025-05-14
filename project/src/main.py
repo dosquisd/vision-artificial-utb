@@ -1,5 +1,3 @@
-# TODO: refactor this file and src directory, in order to make centralized variables
-
 import cv2
 from PIL import Image
 import numpy as np
@@ -11,10 +9,12 @@ from src.modeling import translation_model
 from ultralytics.utils.plotting import Annotator
 
 from copy import deepcopy
-from string import ascii_lowercase
+from src.config import settings
 
 
-def get_label_character(index: int, characters_lowercase: str = ascii_lowercase) -> str:
+def get_label_character(
+    index: int, characters_lowercase: str = settings.CHARACTERS_LOWERCASE
+) -> str:
     """
     Get the label of a character based on its index.
 
@@ -77,7 +77,7 @@ def main(
 
         # Draw bounding box and label on the image
         annotator.box_label(box, character_prediction)
-    
+
     result = annotator.result()
     result = cv2.cvtColor(result, cv2.COLOR_RGB2BGR)
 

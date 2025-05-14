@@ -12,8 +12,8 @@ import xml.etree.ElementTree as ET
 import click
 from src.config import settings
 
-IMAGE_DIR: str = "images"
-ANNOTATIONS_DIR: str = "labels"
+image_dir: str = settings.IMAGES_DIR
+annotations_dir: str = settings.ANNOTATIONS_DIR
 
 
 @click.command()
@@ -45,13 +45,13 @@ def resize_images_and_annotations(input_dir: str, output_dir: str):
     target_size = settings.PROCESSED_IMAGE_SHAPE
 
     os.makedirs(output_dir, exist_ok=True)
-    os.makedirs(os.path.join(output_dir, IMAGE_DIR), exist_ok=True)
-    os.makedirs(os.path.join(output_dir, ANNOTATIONS_DIR), exist_ok=True)
+    os.makedirs(os.path.join(output_dir, image_dir), exist_ok=True)
+    os.makedirs(os.path.join(output_dir, annotations_dir), exist_ok=True)
 
-    for filename in os.listdir(os.path.join(input_dir, IMAGE_DIR)):
+    for filename in os.listdir(os.path.join(input_dir, image_dir)):
         if filename.lower().endswith((".png", ".jpg", ".jpeg")):
             # Procesar imagen
-            img_path = os.path.join(input_dir, IMAGE_DIR, filename)
+            img_path = os.path.join(input_dir, image_dir, filename)
             img = cv2.imread(img_path)
             original_h, original_w = img.shape[:2]
 
@@ -60,7 +60,7 @@ def resize_images_and_annotations(input_dir: str, output_dir: str):
             new_w = int(original_w * scale)
             new_h = int(original_h * scale)
 
-            resized_img = cv2.resize(img, (new_w, new_h))
+            resized_img = cv2.resize(img, (new_h, new_w))
 
             # Añadir padding si es necesario
             delta_w = target_size[0] - new_w
@@ -79,16 +79,16 @@ def resize_images_and_annotations(input_dir: str, output_dir: str):
             )
 
             # Guardar imagen redimensionada
-            cv2.imwrite(os.path.join(output_dir, IMAGE_DIR, filename), padded_img)
+            cv2.imwrite(os.path.join(output_dir, image_dir, filename), padded_img)
 
             # Procesar anotaciones XML correspondientes
             xml_filename = os.path.splitext(filename)[0] + ".xml"
-            xml_path = os.path.join(input_dir, ANNOTATIONS_DIR, xml_filename)
+            xml_path = os.path.join(input_dir, annotations_dir, xml_filename)
 
             if not os.path.exists(xml_path):
                 shutil.copyfile(
-                    os.path.join(input_dir, ANNOTATIONS_DIR, xml_filename),
-                    os.path.join(output_dir, ANNOTATIONS_DIR, xml_filename),
+                    os.path.join(input_dir, annotations_dir, xml_filename),
+                    os.path.join(output_dir, annotations_dir, xml_filename),
                 )
 
             tree = ET.parse(xml_path)
@@ -129,7 +129,7 @@ def resize_images_and_annotations(input_dir: str, output_dir: str):
                 bbox.find("ymax").text = str(ymax)
 
             # Guardar XML modificado
-            tree.write(os.path.join(output_dir, ANNOTATIONS_DIR, xml_filename))
+            tree.write(os.path.join(output_dir, annotations_dir, xml_filename))
 
 
 if __name__ == "__main__":

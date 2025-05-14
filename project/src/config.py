@@ -5,12 +5,29 @@ This module defines configuration settings for image processing and model traini
 using Pydantic for validation and environment variable management.
 """
 
-from pydantic import computed_field
+from string import ascii_lowercase
+
+from pydantic import computed_field, BeforeValidator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing import Annotated
 
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+def split_list(value: str) -> list[str]:
+    """
+    Splits a string into a list of strings based on commas.
+
+    Args:
+        value (str): The input value to be split.
+
+    Returns:
+        list[str] | str: A list of strings if the input is a comma-separated string,
+                         otherwise returns the input value as is.
+    """
+    return [item.strip() for item in value.split(",")]
 
 
 class Settings(BaseSettings):
@@ -24,6 +41,18 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env", env_ignore_empty=True, extra="ignore"
     )
+
+    # It's recommended to use ABSOLUTE PATH in the .env file
+    SAVE_PATH: str
+
+    VALID_IMAGES_EXTENSIONS: Annotated[list[str] | str, BeforeValidator(split_list)] = [
+        ".jpg",
+        ".jpeg",
+        ".png",
+    ]
+
+    IMAGES_DIR: str = "images"
+    ANNOTATIONS_DIR: str = "labels"
 
     PROCESSED_IMAGE_WIDTH: int
     PROCESSED_IMAGE_HEIGHT: int
@@ -53,5 +82,20 @@ class Settings(BaseSettings):
         """
         return self.PROCESSED_CHARACTER_HEIGHT, self.PROCESSED_CHARACTER_WIDTH
 
+    BETA1: float
+    WORKERS: int
+    BATCH_SIZE: int
+    NUM_EPOCHS: int
+    MINI_BATCHES: int
+    LEARNING_RATE: float
+    RATIO_VALIDATION: float
+    CHARACTERS_LOWERCASE: str = ascii_lowercase
+
+    USE_GPU: bool = False
+
 
 settings = Settings()
+
+
+if __name__ == "__main__":
+    print(settings.model_dump())

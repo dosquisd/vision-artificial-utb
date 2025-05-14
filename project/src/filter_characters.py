@@ -58,4 +58,3 @@ def main_filter(image_path: str, radius: float, amount: float) -> cv2.Mat:
     """
     image = cv2.imread(image_path)
     return filter(image, radius, amount)
-

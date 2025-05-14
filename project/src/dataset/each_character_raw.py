@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-ANNOTATIONS_DIR: str = "labels"
+from src.config import settings
 
 
 @click.command()
@@ -22,7 +22,7 @@ ANNOTATIONS_DIR: str = "labels"
 @click.option(
     "--allowed_extensions",
     type=str,
-    default="png,jpg,jpeg",
+    default="",
     help="Extensiones de archivo permitidas (separadas por comas). Por defecto: png,jpg,jpeg",
 )
 def get_each_character_raw(
@@ -50,7 +50,10 @@ def get_each_character_raw(
     if not os.path.exists(input_dir):
         raise FileNotFoundError(f"La ruta de entrada: {input_dir} no existe.")
 
-    allowed_extensions = allowed_extensions.strip().split(",")
+    if not len(allowed_extensions):
+        allowed_extensions = settings.VALID_IMAGES_EXTENSIONS
+    else:
+        allowed_extensions = allowed_extensions.strip().split(",")
 
     input_dir: Path = Path(input_dir)
 
@@ -64,7 +67,7 @@ def get_each_character_raw(
         basename = os.path.basename(str(image_path))
         filename, ext = os.path.splitext(basename)
         parent = image_path.parents[1]
-        label_path = parent / f"{ANNOTATIONS_DIR}/{filename}.txt"
+        label_path = parent / f"{settings.ANNOTATIONS_DIR}/{filename}.txt"
 
         with open(label_path, "r") as labels_txt:
             labels = list(

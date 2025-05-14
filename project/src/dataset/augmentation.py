@@ -400,7 +400,7 @@ def augment_dataset(
 def main(input_dir: str, output_dir: str, per_image: int, augmentation_types: str):
     """
     Generate augmented Braille character images from a source directory.
-    
+
     This command-line tool applies various augmentation techniques to Braille images,
     creating multiple variations to improve model training. Available augmentation
     types include: invert, light_dots, gray_dots, colored_dots, noise, contrast,
