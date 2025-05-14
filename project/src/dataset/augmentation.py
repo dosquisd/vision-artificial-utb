@@ -3,11 +3,13 @@ Data augmentation module for Braille character images.
 
 This module provides functions to augment Braille character images by applying
 various transformations to simulate different real-world conditions, including:
-- Changing dot colors
-- Altering background colors
+- Changing dot and background grayscale values
+- Inverting colors
 - Adding noise
 - Varying contrast and brightness
 - Applying realistic lighting effects
+- Adding blur to simulate focus issues
+- Applying perspective transformations
 """
 
 import cv2
@@ -42,8 +44,8 @@ def change_dot_color(
 
     Args:
         image: Input image
-        dot_color: RGB tuple for dot color
-        background_color: RGB tuple for background color
+        dot_color: Grayscale value for dots (0-255)
+        background_color: Grayscale value for background (0-255)
 
     Returns:
         Image with modified colors
@@ -122,7 +124,7 @@ def simulate_lighting(
     Simulate directional lighting effect on Braille dots.
 
     Args:
-        image: Input grayscale image
+        image: Input image (grayscale or color)
         direction: 3D vector indicating light direction
         intensity: Lighting intensity factor
 
@@ -239,7 +241,17 @@ def augment_image(image: np.ndarray, augmentation_type: str = "random") -> np.nd
 
     Args:
         image: Input image
-        augmentation_type: Type of augmentation to apply
+        augmentation_type: Type of augmentation to apply. Options include:
+            - "invert": Invert colors
+            - "light_dots": White dots on black background
+            - "gray_dots": Gray dots on black background
+            - "colored_dots": Randomly colored dots
+            - "noise": Add random noise
+            - "contrast": Adjust contrast and brightness
+            - "lighting": Simulate directional lighting
+            - "blur": Apply Gaussian blur
+            - "perspective": Apply perspective transformation
+            - "random": Randomly choose one of the above
 
     Returns:
         Augmented image
@@ -274,7 +286,7 @@ def augment_image(image: np.ndarray, augmentation_type: str = "random") -> np.nd
         return change_dot_color(image, gray_value, 0)
 
     elif augmentation_type == "colored_dots":
-        # Colored dots with random color
+        # Different grayscale values for dots and background
         dot_color = random.randint(100, 255)
         bg_color = random.randint(0, 50)
         return change_dot_color(image, dot_color, bg_color)
@@ -323,8 +335,11 @@ def augment_dataset(
     Args:
         input_dir: Input directory containing images
         output_dir: Output directory for augmented images
-        augmentation_types: List of augmentation types to apply
-        augmentations_per_image: Number of augmented versions to create per image
+        augmentation_types: List of augmentation types to apply. For each type,
+                          an augmented image will be created. If ["random"] is specified,
+                          a random augmentation will be chosen for each image.
+        augmentations_per_image: Number of augmented versions to create per image and
+                               per augmentation type
     """
     input_path = Path(input_dir)
     output_path = Path(output_dir)
@@ -383,7 +398,14 @@ def augment_dataset(
     help="Comma-separated list of augmentation types or 'random'",
 )
 def main(input_dir: str, output_dir: str, per_image: int, augmentation_types: str):
-    """Generate augmented Braille character images from a source directory."""
+    """
+    Generate augmented Braille character images from a source directory.
+    
+    This command-line tool applies various augmentation techniques to Braille images,
+    creating multiple variations to improve model training. Available augmentation
+    types include: invert, light_dots, gray_dots, colored_dots, noise, contrast,
+    lighting, blur, and perspective.
+    """
     aug_types = augmentation_types.split(",") if augmentation_types else ["random"]
     augment_dataset(input_dir, output_dir, aug_types, per_image)
 
