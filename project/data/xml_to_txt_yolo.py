@@ -1,5 +1,5 @@
 from pathlib import Path
-from xml.dom import minidom
+import xml.etree.ElementTree as ET
 from typing import TypedDict
 import click
 import os.path
@@ -7,12 +7,14 @@ import os.path
 
 class Size(TypedDict):
     """Represents the size of an image."""
+
     width: int
     height: int
 
 
 class Box(TypedDict):
     """Represents a bounding box in the XML format."""
+
     xmin: int
     ymin: int
     xmax: int
@@ -22,6 +24,7 @@ class Box(TypedDict):
 
 class YoloBox(TypedDict):
     """Represents a bounding box in the YOLO format."""
+
     x: float
     y: float
     width: float
@@ -84,17 +87,11 @@ def create_txt(filename: str, yolo_boxes: list[YoloBox]) -> None:
 
     with open(filename, "x") as f:
         for box in yolo_boxes:
-            f.write(f"{box['class_id']} {box['x']:.6f} {box['y']:.6f} {box['width']:.6f} {box['height']:.6f}\n")
+            f.write(
+                f"{box['class_id']} {box['x']:.6f} {box['y']:.6f} {box['width']:.6f} {box['height']:.6f}\n"
+            )
 
 
-@click.command()
-@click.argument("dir_path",
-                type=click.Path(exists=True, file_okay=False, dir_okay=True),
-                default="./project/data/processed")
-@click.option("-c", "--classes",
-              type=str,
-              help="Classes to be used in the conversion. Separated by commas.",
-              default="Character")
 def main(dir_path: str, classes: str) -> None:
     """
     Main function to convert XML annotations to YOLO format.
@@ -112,34 +109,69 @@ def main(dir_path: str, classes: str) -> None:
     xml_files = list(path.rglob("*.xml"))
     for xml_file in xml_files:
         xml_file = str(xml_file)
-        doc = minidom.parse(xml_file)
+        try:
+            # Using ElementTree instead of minidom for better error handling
+            tree = ET.parse(xml_file)
+            root = tree.getroot()
 
-        annotation = doc.getElementsByTagName("annotation")[0]
-        size = annotation.getElementsByTagName("size")[0]
-        width = int(size.getElementsByTagName("width")[0].firstChild.nodeValue)
-        height = int(size.getElementsByTagName("height")[0].firstChild.nodeValue)
+            # Get image size
+            size_elem = root.find("size")
+            width = int(size_elem.find("width").text)
+            height = int(size_elem.find("height").text)
 
-        objects = annotation.getElementsByTagName("object")
-        tmp_yolobox = []
-        for obj in objects:
-            bndbox = obj.getElementsByTagName("bndbox")[0]
-            xmin = int(bndbox.getElementsByTagName("xmin")[0].firstChild.nodeValue)
-            ymin = int(bndbox.getElementsByTagName("ymin")[0].firstChild.nodeValue)
-            xmax = int(bndbox.getElementsByTagName("xmax")[0].firstChild.nodeValue)
-            ymax = int(bndbox.getElementsByTagName("ymax")[0].firstChild.nodeValue)
-            class_name = obj.getElementsByTagName("name")[0].firstChild.nodeValue
+            # Process all objects (bounding boxes)
+            tmp_yolobox = []
+            for obj in root.findall("object"):
+                bndbox = obj.find("bndbox")
+                xmin = int(bndbox.find("xmin").text)
+                ymin = int(bndbox.find("ymin").text)
+                xmax = int(bndbox.find("xmax").text)
+                ymax = int(bndbox.find("ymax").text)
+                class_name = obj.find("name").text
 
-            size_dict = Size(width=width, height=height)
-            box_dict = Box(xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax, class_name=class_name)
-            yolo_box = convert(size_dict, box_dict, classes_list)
-            tmp_yolobox.append(yolo_box)
+                size_dict = Size(width=width, height=height)
+                box_dict = Box(
+                    xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax, class_name=class_name
+                )
+                yolo_box = convert(size_dict, box_dict, classes_list)
+                tmp_yolobox.append(yolo_box)
 
-        txt_file = xml_file.replace(".xml", ".txt")
-        create_txt(txt_file, tmp_yolobox)
+            txt_file = xml_file.replace(".xml", ".txt")
+            create_txt(txt_file, tmp_yolobox)
+        except ET.ParseError as e:
+            print(f"Error parsing XML file {xml_file}: {e}")
+            continue
+        except Exception as e:
+            print(f"Error processing file {xml_file}: {e}")
+            continue
+
+
+@click.command()
+@click.argument(
+    "dir_path",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True),
+    default="./project/data/processed",
+)
+@click.option(
+    "-c",
+    "--classes",
+    type=str,
+    help="Classes to be used in the conversion. Separated by commas.",
+    default="Character",
+)
+def main_cli(dir_path: str, classes: str) -> None:
+    """
+    Command-line interface for the XML to YOLO conversion script.
+
+    Args:
+        dir_path (str): Path to the directory containing XML files.
+        classes (str): Comma-separated list of class names.
+    """
+    main(dir_path, classes)
 
 
 if __name__ == "__main__":
     """
     Entry point for the script. Parses command-line arguments and starts the conversion process.
     """
-    main()
+    main_cli()
