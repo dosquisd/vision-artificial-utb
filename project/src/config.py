@@ -82,6 +82,20 @@ class Settings(BaseSettings):
         """
         return self.PROCESSED_CHARACTER_HEIGHT, self.PROCESSED_CHARACTER_WIDTH
 
+    PROCESSED_CHARACTER_HEIGHT_YOLO: int
+    PROCESSED_CHARACTER_WIDTH_YOLO: int
+
+    @computed_field
+    @property
+    def PROCESSED_CHARACTER_SHAPE_YOLO(self) -> tuple[int, int]:
+        """
+        Returns the dimensions of processed character regions for YOLO as a tuple (width, height).
+
+        Returns:
+            tuple[int, int]: Width and height of processed character regions for YOLO
+        """
+        return self.PROCESSED_CHARACTER_HEIGHT_YOLO, self.PROCESSED_CHARACTER_WIDTH_YOLO
+
     BETA1: float
     WORKERS: int
     BATCH_SIZE: int
@@ -92,6 +106,20 @@ class Settings(BaseSettings):
     CHARACTERS_LOWERCASE: str = ascii_lowercase
 
     USE_GPU: bool = False
+
+    # Change this method based on the dataset
+    @classmethod
+    def get_class_name(cls, filename: str) -> str:
+        """
+        Returns the class name based on the filename.
+
+        Args:
+            filename (str): The name of the file.
+
+        Returns:
+            str: The class name derived from the filename.
+        """
+        return filename.split(".")[0][0]
 
 
 settings = Settings()
