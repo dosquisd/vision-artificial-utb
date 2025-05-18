@@ -11,7 +11,9 @@ from skimage.morphology import disk
 from src.config import settings
 
 
-def filter(image: cv2.Mat, radius: float, amount: float) -> cv2.Mat:
+def filter(
+    image: cv2.Mat, radius: float, amount: float, shape: tuple[int, int] = None
+) -> cv2.Mat:
     """
     Apply unsharp mask filtering to an image.
 
@@ -22,15 +24,19 @@ def filter(image: cv2.Mat, radius: float, amount: float) -> cv2.Mat:
         image (cv2.Mat): Input image to be filtered (should be in BGR format)
         radius (float): Radius parameter for the unsharp mask filter
         amount (float): Amount/strength parameter for the unsharp mask filter
+        shape (tuple[int, int]): Target shape for the image after processing
 
     Returns:
         cv2.Mat: The filtered image
     """
+    if shape is None:
+        shape = settings.PROCESSED_CHARACTER_SHAPE
+
     # Convertir a escala de grises
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # Hacer un resize
-    gray = cv2.resize(gray, settings.PROCESSED_CHARACTER_SHAPE[::-1])
+    gray = cv2.resize(gray, shape)
 
     # Aplicar más filtros aquí
     gray = filters.median(gray, disk(3))
@@ -40,7 +46,9 @@ def filter(image: cv2.Mat, radius: float, amount: float) -> cv2.Mat:
     return gray
 
 
-def main_filter(image_path: str, radius: float, amount: float) -> cv2.Mat:
+def main_filter(
+    image_path: str, radius: float, amount: float, shape: tuple[int, int] = None
+) -> cv2.Mat:
     """
     Apply a series of image processing filters to prepare an image for braille character detection.
 
@@ -52,9 +60,10 @@ def main_filter(image_path: str, radius: float, amount: float) -> cv2.Mat:
         image_path (str): Path to the image file to be processed
         radius (float): Radius parameter for the unsharp mask filter
         amount (float): Amount/strength parameter for the unsharp mask filter
+        shape (tuple[int, int]): Target shape for the image after processing (shape, width)
 
     Returns:
         cv2.Mat: The processed grayscale image
     """
     image = cv2.imread(image_path)
-    return filter(image, radius, amount)
+    return filter(image, radius=radius, amount=amount, shape=shape)

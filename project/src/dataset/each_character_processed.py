@@ -6,6 +6,7 @@ by applying filters and saving the processed images to a specified directory.
 """
 
 import click
+from tqdm import tqdm
 
 import os
 from pathlib import Path
@@ -36,8 +37,19 @@ from src.config import settings
     default=1.0,
     help="Cantidad del filtro de máscara de desenfoque (unsharp mask). Por defecto: 1.0",
 )
+@click.option(
+    "--shape",
+    type=(int, int),
+    default=None,
+    help="Tamaño de la imagen procesada (ancho, alto). Por defecto: None",
+)
 def get_each_character_processed(
-    input_dir: str, save_dir: str, allowed_extensions: str, radius: float, amount: float
+    input_dir: str,
+    save_dir: str,
+    allowed_extensions: str,
+    radius: float,
+    amount: float,
+    shape: tuple[int, int] = None,
 ) -> None:
     """
     Process braille character images by applying filters and save them to a new directory.
@@ -49,6 +61,9 @@ def get_each_character_processed(
         input_dir (str): Directory containing input images to process
         save_dir (str): Directory where processed images will be saved
         allowed_extensions (str): Comma-separated list of allowed image file extensions
+        radius (float): Radius parameter for the unsharp mask filter
+        amount (float): Amount/strength parameter for the unsharp mask filter
+        shape (tuple[int, int]): Target shape for the image after processing
 
     Raises:
         FileNotFoundError: If the input directory does not exist
@@ -72,9 +87,9 @@ def get_each_character_processed(
     else:
         images_path = [input_dir]
 
-    for image_path in images_path:
+    for image_path in tqdm(images_path):
         basename = os.path.basename(str(image_path))
-        img = main_filter(str(image_path), radius=radius, amount=amount)
+        img = main_filter(str(image_path), radius=radius, amount=amount, shape=shape)
         cv2.imwrite(os.path.join(save_dir, basename), img)
 
 
