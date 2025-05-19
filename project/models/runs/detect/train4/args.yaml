@@ -7,8 +7,8 @@ time: null
 patience: 100
 batch: 128
 imgsz:
-- 28
-- 28
+- 32
+- 32
 save: true
 save_period: -1
 cache: false
