@@ -10,6 +10,7 @@ import shutil
 import os
 import xml.etree.ElementTree as ET
 import click
+from typing import TypedDict
 from src.config import settings
 
 image_dir: str = settings.IMAGES_DIR
@@ -17,8 +18,73 @@ annotations_dir: str = settings.ANNOTATIONS_DIR
 valid_extensions: tuple = settings.VALID_IMAGES_EXTENSIONS
 
 
+class ResizeImageOutput(TypedDict):
+    """
+    Output structure for the resize_image function.
+
+    Attributes:
+        left (int): Left padding size in pixels.
+        top (int): Top padding size in pixels.
+        scale (float): Scale factor used for resizing.
+        padded_img (cv2.Mat): The resized and padded image.
+    """
+
+    left: int
+    top: int
+    scale: float
+    padded_img: cv2.Mat
+
+
+def resize_image(img: cv2.Mat, target_size: tuple[int, int]) -> ResizeImageOutput:
+    """
+    Resize an image to a target size while maintaining aspect ratio.
+
+    The function resizes the image to fit within the target size while
+    maintaining its aspect ratio. If needed, padding is added to reach
+    the exact target dimensions.
+
+    Args:
+        img (cv2.Mat): Input image to be resized.
+        target_size (tuple[int, int]): Target size as (width, height).
+
+    Returns:
+        ResizeImageOutput: A dictionary containing the padding information,
+                          scale factor, and the resized image.
+    """
+    h, w = img.shape[:2]
+    if h == target_size[1] and w == target_size[0]:
+        return {"padded_img": img, "left": 0, "scale": 1, "top": 0}
+
+    scale = min(target_size[0] / w, target_size[1] / h)
+    new_w = int(w * scale)
+    new_h = int(h * scale)
+
+    # Añadir padding si es necesario
+    delta_w = target_size[0] - new_w
+    delta_h = target_size[1] - new_h
+    top, bottom = delta_h // 2, delta_h - (delta_h // 2)
+    left, right = delta_w // 2, delta_w - (delta_w // 2)
+
+    resized_img = cv2.resize(img, (new_h, new_w))
+
+    padded_img = cv2.copyMakeBorder(
+        resized_img,
+        top,
+        bottom,
+        left,
+        right,
+        cv2.BORDER_CONSTANT,
+        value=(0, 0, 0),
+    )
+
+    return {"padded_img": padded_img, "left": left, "scale": scale, "top": top}
+
+
 def resize_images_and_annotations(
-    input_dir: str, output_dir: str, target_size: tuple = None, class_name_fn: callable = None
+    input_dir: str,
+    output_dir: str,
+    target_size: tuple = None,
+    class_name_fn: callable = None,
 ) -> None:
     """
     Resize images and adjust their XML annotations to a standard size.
@@ -48,30 +114,11 @@ def resize_images_and_annotations(
         # Procesar imagen
         img_path = os.path.join(input_dir, image_dir, filename)
         img = cv2.imread(img_path)
-        original_h, original_w = img.shape[:2]
-
-        # Redimensionar imagen manteniendo relación de aspecto
-        scale = min(target_size[0] / original_w, target_size[1] / original_h)
-        new_w = int(original_w * scale)
-        new_h = int(original_h * scale)
-
-        resized_img = cv2.resize(img, (new_h, new_w))
-
-        # Añadir padding si es necesario
-        delta_w = target_size[0] - new_w
-        delta_h = target_size[1] - new_h
-        top, bottom = delta_h // 2, delta_h - (delta_h // 2)
-        left, right = delta_w // 2, delta_w - (delta_w // 2)
-
-        padded_img = cv2.copyMakeBorder(
-            resized_img,
-            top,
-            bottom,
-            left,
-            right,
-            cv2.BORDER_CONSTANT,
-            value=(0, 0, 0),
-        )
+        output = resize_image(img, target_size)
+        padded_img = output["padded_img"]
+        left = output["left"]
+        top = output["top"]
+        scale = output["scale"]
 
         # Guardar imagen redimensionada
         cv2.imwrite(os.path.join(output_dir, image_dir, filename), padded_img)
