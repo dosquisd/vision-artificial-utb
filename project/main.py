@@ -1,5 +1,3 @@
-# TODO: There are cases where this function can fail, so improve the error handling
-
 """
 Main module for Braille character detection and translation.
 
@@ -13,6 +11,9 @@ to create a complete system that can:
 
 The system supports different model versions for both detection and translation
 components, allowing for experimentation with different approaches.
+
+As new versions of the models are released, may be added and the code may need to be
+adjusted to work as expected.
 """
 
 import cv2
@@ -26,7 +27,7 @@ from src.versions.classes import (
     OutputTranslationModel,
     InputCharacterModel,
     OutputCharacterModel,
-    OutputPrediction
+    OutputPrediction,
 )
 from src.filter_characters import filter
 from src.dataset.train_test_processed import resize_image
@@ -89,7 +90,7 @@ def main(
     image = resize_image(image, settings.PROCESSED_IMAGE_SHAPE)["padded_img"]
     character_shape = (
         settings.PROCESSED_CHARACTER_SHAPE_YOLO
-        if is_character_input_yolo
+        if is_translation_input_yolo
         else settings.PROCESSED_CHARACTER_SHAPE
     )
 
@@ -100,7 +101,7 @@ def main(
     print("Prediction for characters...")
     character_output: OutputCharacterModel = character_model(**characters_kwargs)
     n = len(character_output["boxes"])
-    print(n, "\n\n")
+    print(n, "\n")
 
     annotator = Annotator(img)
     for i in range(n):
@@ -111,10 +112,11 @@ def main(
             character_img, radius=radius, amount=amount, shape=character_shape
         )
 
-        character_img_rgb = cv2.cvtColor(filtered_img, cv2.COLOR_GRAY2BGR)
-        translation_kwargs["img"] = character_img_rgb
+        if is_translation_input_yolo:
+            filtered_img = cv2.cvtColor(filtered_img, cv2.COLOR_GRAY2BGR)
+        translation_kwargs["img"] = filtered_img
 
-        print("Prediction for translation")
+        print("\n\nPrediction for translation")
         translation_output: OutputTranslationModel = translation_model(
             **translation_kwargs
         )
@@ -145,9 +147,10 @@ def main(
 
 
 if __name__ == "__main__":
-    # Using all yolo models
     img = cv2.imread("./data/processed/test/images/34_1.jpg")
 
+    # Using all yolo models
+    """
     characters_kwargs = {
         "yolo_model_path": "./models/runs/detect/train2/weights/best.pt",
         "conf": 0.7,
@@ -160,10 +163,28 @@ if __name__ == "__main__":
         "iou": 0.7,
     }
 
+    character_model_version = "v1"
+    translation_model_version = "v2"
+    """
+
+    # Using yolo for characters and pytorch for translation
+    characters_kwargs: InputCharacterModel = {
+        "yolo_model_path": "./models/runs/detect/train2/weights/best.pt",
+        "conf": 0.7,
+        "iou": 0.7,
+    }
+    translation_kwargs: InputTranslationModel = {
+        "translation_model_path": "./models/runs/translation/train4/best_model_epoch92.pth",
+        "device": "cpu",
+    }
+
+    character_model_version = "v1"
+    translation_model_version = "v1"
+
     output = main(
         image=img,
-        character_model_version="v1",
-        translation_model_version="v2",
+        character_model_version=character_model_version,
+        translation_model_version=translation_model_version,
         characters_kwargs=characters_kwargs,
         translation_kwargs=translation_kwargs,
     )
