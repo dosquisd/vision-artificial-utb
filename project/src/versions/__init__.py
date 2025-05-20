@@ -20,5 +20,5 @@ __all__ = [
     "translationv2",
     "VERSIONS",
     "classes",
-    "utils"
+    "utils",
 ]

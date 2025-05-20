@@ -8,8 +8,14 @@ into their corresponding labels using a pre-trained PyTorch model.
 import cv2
 import torch
 from copy import deepcopy
-from src.modeling import translation_model
+from src.versions.translation.v1 import model as translation_model
 from src.versions.classes import PytorchTranslationOutput
+
+
+net = deepcopy(translation_model.net)
+optimizer = deepcopy(translation_model.optimizer)
+transform = deepcopy(translation_model.transform)
+net.eval()
 
 
 def main(
@@ -30,11 +36,6 @@ def main(
         PytorchTranslationOutput: Object containing translation result with the following attribute:
             - class_id: Predicted class ID for the input character.
     """
-    net = deepcopy(translation_model.net)
-    optimizer = deepcopy(translation_model.optimizer)
-    transform = deepcopy(translation_model.transform)
-    net.eval()
-
     checkpoint = torch.load(translation_model_path, map_location=device)
     net.load_state_dict(checkpoint["model_state_dict"])
     optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
