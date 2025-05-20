@@ -107,7 +107,7 @@ class Settings(BaseSettings):
 
     USE_GPU: bool = False
 
-    # Change this method based on the dataset
+    # Change these methods based on the dataset
     @classmethod
     def get_class_name(cls, filename: str) -> str:
         """
@@ -120,6 +120,24 @@ class Settings(BaseSettings):
             str: The class name derived from the filename.
         """
         return filename.split(".")[0][0]
+
+    def get_label_character(self, index: int, characters_lowercase: str = "") -> str:
+        """
+        Get the label of a character based on its index.
+
+        Args:
+            index (int): Index of the character
+            characters_lowercase (str): String containing lowercase characters
+
+        Returns:
+            str: The corresponding character label
+        """
+        if not characters_lowercase:
+            characters_lowercase = self.CHARACTERS_LOWERCASE
+
+        if index < 0 or index >= len(characters_lowercase):
+            raise ValueError("Index out of range")
+        return characters_lowercase[index]
 
 
 settings = Settings()
