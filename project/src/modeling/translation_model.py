@@ -2,18 +2,7 @@
 Braille Character Translation Model.
 
 This module implements a CNN (Convolutional Neural Network) model for classifying
-individual Braille characters. It includes the model definitio    # DataLoader requires to have this property
-    @property
-    def imgs(self) -> list[Path]:
-        '''
-        Property that returns the list of image paths.
-
-        Required by PyTorch DataLoader.
-
-        Returns:
-            list[Path]: List of paths to all images in the dataset
-        '''
-        return self.imgs_pathata management classes,
+individual Braille characters. It includes the model definition, data management classes,
 training routines, and auxiliary functions.
 
 The model is designed to take grayscale images of Braille characters as input
@@ -290,6 +279,11 @@ if __name__ == "__main__":
     The best model (with lowest loss) is saved to disk when training completes.
     
     The training process includes the following steps:
+    1. Loading and splitting the dataset into training and validation sets
+    2. Creating data loaders for batch processing
+    3. Training the model for a specified number of epochs
+    4. Computing loss and accuracy metrics
+    5. Saving the best performing model based on loss
     1. Load and split the dataset into training and validation sets
     2. Create data loaders for batch processing
     3. Train the model for the specified number of epochs
