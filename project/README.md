@@ -62,7 +62,7 @@ El proyecto está organizado en la siguiente estructura de directorios:
 Para utilizar el sistema de traducción de Braille, ejecute el script principal:
 
 ```bash
-python main.py
+python3 main.py
 ```
 
 El script cargará los modelos preentrenados y procesará la imagen de prueba especificada en el código.

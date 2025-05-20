@@ -1,3 +1,5 @@
+# TODO: There are cases where this function can fail, so improve the error handling
+
 """
 Main module for Braille character detection and translation.
 
