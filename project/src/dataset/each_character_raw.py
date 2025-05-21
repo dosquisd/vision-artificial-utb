@@ -23,7 +23,7 @@ from src.config import settings
     "--allowed_extensions",
     type=str,
     default="",
-    help="Extensiones de archivo permitidas (separadas por comas). Por defecto: png,jpg,jpeg",
+    help="Allowed file extensions (comma-separated). Default: png,jpg,jpeg",
 )
 def get_each_character_raw(
     input_dir: str, save_dir: str, allowed_extensions: str
@@ -43,12 +43,12 @@ def get_each_character_raw(
     Raises:
         FileNotFoundError: If the input directory does not exist
     """
-    # Crear el directorio de salida si no existe
+    # Create output directory if it doesn't exist
     os.makedirs(save_dir, exist_ok=True)
 
-    # Validar la existencia de los directorios y archivos
+    # Validate the existence of directories and files
     if not os.path.exists(input_dir):
-        raise FileNotFoundError(f"La ruta de entrada: {input_dir} no existe.")
+        raise FileNotFoundError(f"Input path: {input_dir} does not exist.")
 
     if not len(allowed_extensions):
         allowed_extensions = settings.VALID_IMAGES_EXTENSIONS
@@ -99,7 +99,7 @@ def get_each_character_raw(
             try:
                 Image.fromarray(character).save(output_path)
             except Exception as e:
-                print(f"Error al guardar la imagen {output_path}: {e}", end="  ---  ")
+                print(f"Error saving image {output_path}: {e}", end="  ---  ")
                 print(f"{x1=}, {y1=}, {x2=}, {y2=}")
 
 

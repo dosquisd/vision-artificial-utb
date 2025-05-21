@@ -1,3 +1,10 @@
+"""
+Utility functions for the versions module.
+
+This module provides utility functions for validating model paths,
+and working with typed dictionaries in various version implementations.
+"""
+
 from src.versions.utils.valid_model_paths import is_yolo_model_path
 from src.versions.utils.type_utils import (
     is_typed_dict_instance,

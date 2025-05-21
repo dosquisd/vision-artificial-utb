@@ -5,11 +5,12 @@ This module provides functionality to train a YOLOv8 model for
 detecting braille characters in images using the Ultralytics implementation.
 """
 
+from typing import Any
 from ultralytics import YOLO
 from src.config import settings
 
 
-def main() -> None:
+def main(dataset: str, basemodel: str, **kwargs_training: Any) -> None:
     """
     Train a YOLOv8 model for braille character detection.
 
@@ -21,14 +22,13 @@ def main() -> None:
     saves the trained model and results in the project's model directory.
     """
     model: YOLO = YOLO(
-        model="../../models/yolo11n.pt",
+        model=basemodel,
         task="detect",
     )
 
     model.train(
-        data="../../data.yaml", epochs=100, imgsz=settings.PROCESSED_IMAGE_SHAPE
+        data=dataset,
+        epochs=100,
+        imgsz=settings.PROCESSED_IMAGE_SHAPE[::-1],
+        **kwargs_training,
     )
-
-
-if __name__ == "__main__":
-    main()

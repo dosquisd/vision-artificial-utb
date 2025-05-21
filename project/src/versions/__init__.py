@@ -1,3 +1,11 @@
+"""
+Version management module for the Braille Translator project.
+
+This module manages different versions of the translation and character detection
+pipelines, allowing easy switching between implementation versions.
+It provides a registry of available pipeline versions through the VERSIONS dictionary.
+"""
+
 from src.versions.characters import characterv1
 from src.versions.translation import translationv1, translationv2
 import src.versions.classes as classes

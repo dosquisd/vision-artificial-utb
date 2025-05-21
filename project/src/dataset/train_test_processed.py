@@ -59,7 +59,7 @@ def resize_image(img: cv2.Mat, target_size: tuple[int, int]) -> ResizeImageOutpu
     new_w = int(w * scale)
     new_h = int(h * scale)
 
-    # Añadir padding si es necesario
+    # Add padding if necessary
     delta_w = target_size[0] - new_w
     delta_h = target_size[1] - new_h
     top, bottom = delta_h // 2, delta_h - (delta_h // 2)
@@ -111,7 +111,7 @@ def resize_images_and_annotations(
         if not filename.lower().endswith(tuple(valid_extensions)):
             continue
 
-        # Procesar imagen
+        # Process image
         img_path = os.path.join(input_dir, image_dir, filename)
         img = cv2.imread(img_path)
         output = resize_image(img, target_size)
@@ -120,10 +120,10 @@ def resize_images_and_annotations(
         top = output["top"]
         scale = output["scale"]
 
-        # Guardar imagen redimensionada
+        # Save resized image
         cv2.imwrite(os.path.join(output_dir, image_dir, filename), padded_img)
 
-        # Procesar anotaciones XML correspondientes
+        # Process corresponding XML annotations
         xml_filename = os.path.splitext(filename)[0] + ".xml"
         xml_path = os.path.join(input_dir, annotations_dir, xml_filename)
 
@@ -136,12 +136,12 @@ def resize_images_and_annotations(
         tree = ET.parse(xml_path)
         root = tree.getroot()
 
-        # Actualizar tamaño de imagen en el XML
+        # Update image size in XML
         size = root.find("size")
         size.find("width").text = str(target_size[0])
         size.find("height").text = str(target_size[1])
 
-        # Actualizar coordenadas de cada objeto
+        # Update coordinates for each object
         for obj in root.iter("object"):
             obj.find("name").text = class_name_fn(filename) if class_name_fn else "0"
 
@@ -151,13 +151,13 @@ def resize_images_and_annotations(
             xmax = int(bbox.find("xmax").text)
             ymax = int(bbox.find("ymax").text)
 
-            # Ajustar coordenadas al redimensionamiento
+            # Adjust coordinates for resizing
             xmin = int(xmin * scale) + left
             ymin = int(ymin * scale) + top
             xmax = int(xmax * scale) + left
             ymax = int(ymax * scale) + top
 
-            # Asegurar que no salen de los límites
+            # Ensure coordinates stay within image boundaries
             xmin = max(0, min(xmin, target_size[0] - 1))
             xmax = max(0, min(xmax, target_size[0] - 1))
             ymin = max(0, min(ymin, target_size[1] - 1))
@@ -168,7 +168,7 @@ def resize_images_and_annotations(
             bbox.find("xmax").text = str(xmax)
             bbox.find("ymax").text = str(ymax)
 
-        # Guardar XML modificado
+        # Save modified XML
         tree.write(os.path.join(output_dir, annotations_dir, xml_filename))
 
 
@@ -177,13 +177,13 @@ def resize_images_and_annotations(
     "--input_dir",
     type=str,
     required=True,
-    help="Directorio de entrada con imágenes y anotaciones",
+    help="Input directory with images and annotations",
 )
 @click.option(
     "--output_dir",
     type=str,
     required=True,
-    help="Directorio de salida para imágenes y anotaciones redimensionadas",
+    help="Output directory for resized images and annotations",
 )
 def main(input_dir: str, output_dir: str, target_size: tuple = None) -> None:
     """

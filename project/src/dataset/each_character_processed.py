@@ -23,25 +23,25 @@ from src.config import settings
     "--allowed_extensions",
     type=str,
     default="",
-    help="Extensiones de archivo permitidas (separadas por comas). Por defecto: png,jpg,jpeg",
+    help="Allowed file extensions (comma-separated). Default: png,jpg,jpeg",
 )
 @click.option(
     "--radius",
     type=float,
     default=1.0,
-    help="Radio del filtro de máscara de desenfoque (unsharp mask). Por defecto: 1.0",
+    help="Radius for unsharp mask filter. Default: 1.0",
 )
 @click.option(
     "--amount",
     type=float,
     default=1.0,
-    help="Cantidad del filtro de máscara de desenfoque (unsharp mask). Por defecto: 1.0",
+    help="Amount/strength for unsharp mask filter. Default: 1.0",
 )
 @click.option(
     "--shape",
     type=(int, int),
     default=None,
-    help="Tamaño de la imagen procesada (ancho, alto). Por defecto: None",
+    help="Target size for processed image (width, height). Default: None",
 )
 def get_each_character_processed(
     input_dir: str,
@@ -68,12 +68,12 @@ def get_each_character_processed(
     Raises:
         FileNotFoundError: If the input directory does not exist
     """
-    # Crear el directorio de salida si no existe
+    # Create output directory if it doesn't exist
     os.makedirs(save_dir, exist_ok=True)
 
-    # Validar la existencia de los directorios y archivos
+    # Validate the existence of directories and files
     if not os.path.exists(input_dir):
-        raise FileNotFoundError(f"La ruta de entrada: {input_dir} no existe.")
+        raise FileNotFoundError(f"Input path: {input_dir} does not exist.")
 
     if not len(allowed_extensions):
         allowed_extensions = settings.VALID_IMAGES_EXTENSIONS
