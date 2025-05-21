@@ -28,6 +28,11 @@ def main(
         iou (float, optional): IoU (Intersection over Union) threshold for NMS. Defaults to 0.7.
 
     Returns:
+        YOLOClassifyOutput: A dictionary-like object containing:
+            - top1_class_id (int): The predicted class ID with highest confidence
+            - top1_confidence (float): The confidence score for the top prediction
+            - top5_class_ids (list[int]): List of top 5 predicted class IDs
+            - top5_confidences (list[float]): Confidence scores for the top 5 predictions
     """
     yolo_model: YOLO = YOLO(model=yolo_model_path, task="detect")
     prediction = yolo_model.predict(source=img, conf=conf, iou=iou)[0]
