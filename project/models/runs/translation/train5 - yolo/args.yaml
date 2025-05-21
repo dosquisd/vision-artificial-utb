@@ -1,11 +1,11 @@
-task: detect
+task: classify
 mode: train
-model: ../models/yolo11n.pt
-data: ../data_translation.yaml
+model: ../models/yolo11n-cls.pt
+data: ../data/processed/kaggle/yolo
 epochs: 100
 time: null
 patience: 100
-batch: 128
+batch: 16
 imgsz:
 - 32
 - 32
@@ -14,8 +14,8 @@ save_period: -1
 cache: false
 device: null
 workers: 8
-project: null
-name: train4
+project: ../models/runs/translation
+name: train5
 exist_ok: false
 pretrained: true
 optimizer: auto
@@ -104,4 +104,4 @@ auto_augment: randaugment
 erasing: 0.4
 cfg: null
 tracker: botsort.yaml
-save_dir: /home/juand/Documents/vscode/semestre7/vision_artificial/project/models/runs/detect/train4
+save_dir: ../models/runs/translation/train5

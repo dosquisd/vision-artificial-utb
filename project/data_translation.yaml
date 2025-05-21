@@ -1,4 +1,4 @@
-path: ./data/processed/kaggle/yolo
+path: /home/juand/Documents/vscode/semestre7/vision_artificial/project/data/processed/kaggle/yolo
 train: train/
 val: test/
 
