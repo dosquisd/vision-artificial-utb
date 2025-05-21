@@ -8,7 +8,7 @@ Los datos utilizados en este proyecto provienen de múltiples fuentes:
 
 2. **Conjunto de datos de Kaggle**: También se incorporaron datos del [Kaggle Braille Character Dataset](https://www.kaggle.com/datasets/shanks0465/braille-character-dataset), ubicados en [processed/kaggle](./processed/kaggle/).
 
-3. **Caracteres individuales**: El proyecto incluye un extenso conjunto de imágenes de caracteres Braille individuales en [processed/character](./processed/character/).
+3. **Caracteres individuales**: El proyecto incluye un extenso conjunto de imágenes de caracteres Braille individuales en [processed/character](./processed/character/), generadas a través del procesamiento de las imágenes originales.
 
 ## Estructura de Datos
 
@@ -21,7 +21,7 @@ Los datos están organizados en la siguiente estructura:
 
 - **[processed/](./processed/)**: Datos procesados para entrenamiento y evaluación
   - **character/**: Imágenes de caracteres individuales procesados
-  - **kaggle/**: Datos procesados de Kaggle, incluyendo versión YOLO
+  - **kaggle/**: Datos procesados de Kaggle, incluyendo versión YOLO para clasificación
   - **test/**: Datos de prueba procesados
   - **train/**: Datos de entrenamiento procesados
 
@@ -36,6 +36,16 @@ Para convertir anotaciones de PascalVOC a YOLO:
 ```bash
 python3 xml_to_txt_yolo.py
 ```
+
+El script detecta automáticamente los archivos XML en las carpetas especificadas y genera los archivos de anotación YOLO correspondientes con las coordenadas normalizadas requeridas por el framework.
+
+### Preprocesamiento de imágenes
+
+El conjunto de datos pasa por varios procesos de filtrado y transformación:
+
+1. **Extracción de caracteres**: Los caracteres individuales son extraídos de las imágenes originales basándose en las anotaciones de las cajas delimitadoras.
+2. **Filtrado y mejora**: Se aplican filtros de desenfoque y realce para mejorar la calidad de las imágenes de caracteres.
+3. **Aumentación de datos**: Se generan imágenes adicionales mediante técnicas de aumentación para mejorar el entrenamiento.
 
 ### Edición manual de anotaciones
 

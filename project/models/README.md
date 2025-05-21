@@ -4,9 +4,10 @@ Este directorio contiene los modelos entrenados y resultados de entrenamiento pa
 
 ## Modelos Base
 
-El proyecto utiliza un modelo base de YOLO para la detección de caracteres:
+El proyecto utiliza modelos base de YOLO tanto para la detección como para la clasificación de caracteres:
 
-- **[yolo11n.pt](./yolo11n.pt)**: Modelo base de YOLO descargado de [Ultralytics YOLOv11](https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt)
+- **[yolo11n.pt](./yolo11n.pt)**: Modelo base de YOLO para detección, utilizado en la versión v1 del modelo de detección de caracteres Braille
+- **[yolo11n-cls.pt](./yolo11n-cls.pt)**: Modelo base de YOLO para clasificación, utilizado en la versión v2 del módulo de traducción
 
 ## Estructura de Modelos
 
@@ -18,14 +19,17 @@ Los modelos entrenados y los resultados de entrenamiento se organizan en la sigu
     - **train2/**: Segundo entrenamiento del modelo de detección
     - **train3/**: Evaluación del modelo de detección
   - **[translation/](./runs/translation/)**: Resultados de modelos de traducción
-    - **train1-yolo/**: Entrenamiento del modelo YOLO para traducción
+    - **trainX**: Modelos resultantes de la versión v1 de traducción
+    - **train5-yolo/**: Entrenamiento del modelo YOLO para traducción
   - **[dcgan/](./runs/dcgan/)**: Resultados del entrenamiento DCGAN
 
 ## Historial de Entrenamiento
 
 - Inicialmente, se entrenó un modelo en [train2](./runs/detect/train2/) antes de configurar correctamente el archivo de configuración de Ultralytics.
 - Posteriormente, los entrenamientos en [train](./runs/detect/train/) y [train3](./runs/detect/train3/) corresponden al entrenamiento y evaluación de un mismo modelo, respectivamente, con la configuración correcta.
-- El modelo de traducción basado en YOLO se entrenó y almacenó en [train1-yolo](./runs/translation/train1-yolo/).
+- Se pensó en la idea de crear un modelo para generación de caracteres Braille para la aumentación de datos, dicho modelo fue almacenado en [dcgan](./runs/dcgan/train/), pero este nunca fue utilizado.
+- Luego, se empezó con el entrenamiento de la primera versión del modelo de traducción, almacenados en [train](./runs/translation/train/), [train2](./runs/translation/train2/), [train3](./runs/translation/train3/) y [train4](./runs/translation/train4/).
+- El modelo de traducción basado en YOLO se entrenó y almacenó en [train5-yolo](./runs/translation/train5-yolo/).
 
 ## Configuración de Ultralytics
 
