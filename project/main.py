@@ -17,6 +17,7 @@ adjusted to work as expected.
 """
 
 import cv2
+import numpy as np
 from ultralytics.utils.plotting import Annotator
 
 from src.config import settings
@@ -42,6 +43,9 @@ def main(
     translation_model_version: str,
     characters_kwargs: InputCharacterModel,
     translation_kwargs: InputTranslationModel,
+    top1: bool = True,
+    top5_cls_func: callable = None,
+    top5_conf_func: callable = None,
     radius: float = 1.0,
     amount: float = 1.0,
 ) -> Union[OutputPrediction, None]:
@@ -58,6 +62,14 @@ def main(
         translation_model_version (str): Version of the translation model to use
         characters_kwargs (InputCharacterModel): Configuration parameters for the character model
         translation_kwargs (InputTranslationModel): Configuration parameters for the translation model
+        top1 (bool, optional): Flag to indicate whether to use top-1 prediction for Translation Model. \
+            Defaults to True.
+        top5_cls_func (callable, optional): Function to apply top-5 results in order to get the class id. \
+            This function must be defined as `top5_cls_func(cls_id: list[int], conf: list[float]) -> int`. \
+            If not provided, then the top-1 prediction for class id will be used.
+        top5_conf_func (callable, optional): Function to apply top-5 results in order to get the resultant confidence. \
+            This function must be defined as `top5_conf_func(cls_id: list[int], conf: list[float]) -> float`. \
+            If not provided, then the top-1 prediction for confidence will be used.
         radius (float, optional): Radius parameter for image filtering. Defaults to 1.0.
         amount (float, optional): Amount parameter for image filtering. Defaults to 1.0.
 
@@ -94,14 +106,28 @@ def main(
         else settings.PROCESSED_CHARACTER_SHAPE
     )
 
+    if not is_translation_input_yolo:
+        class_id_key = "class_id"
+        confidence_key = "confidences"
+    elif top1 or top5_cls_func is None or top5_conf_func is None:
+        class_id_key = "top1_class_id"
+        confidence_key = "top1_confidence"
+    else:
+        class_id_key = "top5_class_ids"
+        confidence_key = "top5_confidences"
+
+    if top5_cls_func is None:
+        top5_cls_func = lambda cls_id, conf: cls_id[0]  # noqa: E731
+
+    if top5_conf_func is None:
+        top5_conf_func = lambda cls_id, conf: conf[0] if conf[0] is not None else None  # noqa: E731
+
     characters_kwargs["img"] = image
 
-    out: OutputPrediction = {"boxes": [], "character_predicted": []}
+    out: OutputPrediction = {"orig_img": np.array(image), "boxes": [], "character_predicted": [], "confidences": []}
 
-    print("Prediction for characters...")
     character_output: OutputCharacterModel = character_model(**characters_kwargs)
     n = len(character_output["boxes"])
-    print(n, "\n")
 
     annotator = Annotator(img)
     for i in range(n):
@@ -116,22 +142,28 @@ def main(
             filtered_img = cv2.cvtColor(filtered_img, cv2.COLOR_GRAY2BGR)
         translation_kwargs["img"] = filtered_img
 
-        print("\n\nPrediction for translation")
         translation_output: OutputTranslationModel = translation_model(
             **translation_kwargs
         )
 
-        class_id = (
-            translation_output["class_ids"][0]
-            if is_translation_input_yolo
-            else translation_output["class_id"]
-        )
+        class_id = translation_output[class_id_key]
+        if not isinstance(class_id, list):
+            class_id = [class_id]
+
+        if is_translation_input_yolo:
+            conf = translation_output[confidence_key]
+            conf = [conf] if not isinstance(conf, list) else conf
+        else:
+            conf = [None]
+
+        class_id = top5_cls_func(class_id, conf)
+        conf = top5_conf_func(class_id, conf)
 
         character_predicted = settings.get_label_character(class_id)
+
         label_text = character_predicted
-        if "confidences" in translation_output:
-            conf = translation_output["confidences"][0]
-            label_text = f"{label_text} - {conf:.2f}"
+        if conf is not None:
+            label_text += f" - {conf:.2f}"
 
         # if "confidences" in character_output:
         #     conf = character_output["confidences"][i]
@@ -139,10 +171,11 @@ def main(
 
         out["boxes"].append(box)
         out["character_predicted"].append(character_predicted)
+        out["confidences"].append(conf)
 
         annotator.box_label(box, label_text)
 
-    out["result"] = annotator.result()
+    out["result_img"] = annotator.result()
     return out
 
 
@@ -150,7 +183,6 @@ if __name__ == "__main__":
     img = cv2.imread("./data/processed/test/images/34_1.jpg")
 
     # Using all yolo models
-    """
     characters_kwargs = {
         "yolo_model_path": "./models/runs/detect/train2/weights/best.pt",
         "conf": 0.7,
@@ -158,15 +190,23 @@ if __name__ == "__main__":
     }
 
     translation_kwargs = {
-        "yolo_model_path": "./models/runs/translation/train1-yolo/weights/best.pt",
+        "yolo_model_path": "./models/runs/translation/train5-yolo/weights/best.pt",
         "conf": 0.0,
         "iou": 0.7,
     }
 
     character_model_version = "v1"
     translation_model_version = "v2"
-    """
 
+    extra_kwargs = {
+        "top1": False,
+        "top5_cls_func": lambda cls_id, conf: int(
+            sum((i * conf_i) for i, conf_i in zip(cls_id, conf))
+        ),
+        "top5_conf_func": lambda cls_id, conf: max(conf),
+    }
+
+    """
     # Using yolo for characters and pytorch for translation
     characters_kwargs: InputCharacterModel = {
         "yolo_model_path": "./models/runs/detect/train2/weights/best.pt",
@@ -181,16 +221,20 @@ if __name__ == "__main__":
     character_model_version = "v1"
     translation_model_version = "v1"
 
+    extra_kwargs = {}
+    """
+
     output = main(
         image=img,
         character_model_version=character_model_version,
         translation_model_version=translation_model_version,
         characters_kwargs=characters_kwargs,
         translation_kwargs=translation_kwargs,
+        **extra_kwargs,
     )
 
     print("Presione cualquier tecla para salir...")
-    result = output["result"]
+    result = output["result_img"]
 
     cv2.imshow("Result", result)
     cv2.waitKey(0)

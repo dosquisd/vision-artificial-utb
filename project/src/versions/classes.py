@@ -13,16 +13,19 @@ from typing import TypedDict, Union
 class OutputPrediction(TypedDict):
     """
     Final output structure for the main processing pipeline.
-    
+
     Attributes:
+        orig_img (np.ndarray): The original input image.
         result (np.ndarray): The annotated image showing detections
         boxes (list[list[int]]): List of bounding boxes for detected characters
         character_predicted (list[str]): List of predicted characters for each detection
     """
 
-    result: np.ndarray
+    orig_img: np.ndarray
+    result_img: np.ndarray
     boxes: list[list[int]]
     character_predicted: list[str]
+    confidences: list[float | None]
 
 
 class YOLOInput(TypedDict):
@@ -40,7 +43,7 @@ class YOLOInput(TypedDict):
     iou: float
 
 
-class YOLOOutput(TypedDict):
+class YOLODetectOutput(TypedDict):
     """
     Output structure for functions that use YOLO models.
 
@@ -53,6 +56,23 @@ class YOLOOutput(TypedDict):
     boxes: list[Tensor]
     confidences: list[float]
     class_ids: list[int]
+
+
+class YOLOClassifyOutput(TypedDict):
+    """
+    Output structure for functions that use YOLO classification models.
+
+    Attributes:
+        top1_class_id (int): The predicted class ID with the highest confidence (top-1 prediction).
+        top1_confidence (float): The confidence score associated with the top-1 predicted class.
+        top5_class_ids (list[int]): List of the top 5 predicted class IDs, ordered by confidence (descending).
+        top5_confidences (list[float]): List of confidence scores corresponding to each class ID in `top5_class_ids`.
+    """
+
+    top1_class_id: int
+    top1_confidence: float
+    top5_class_ids: list[int]
+    top5_confidences: list[float]
 
 
 class PytorchTranslationInput(TypedDict):
@@ -84,11 +104,11 @@ class PytorchTranslationOutput(TypedDict):
 InputCharacterModel = Union[YOLOInput]
 """Type alias for character detection model inputs, unifying various input format types."""
 
-OutputCharacterModel = Union[YOLOOutput]
+OutputCharacterModel = Union[YOLODetectOutput]
 """Type alias for character detection model outputs, unifying various output format types."""
 
 InputTranslationModel = Union[YOLOInput, PytorchTranslationInput]
 """Type alias for character translation model inputs, unifying various input format types."""
 
-OutputTranslationModel = Union[YOLOOutput, PytorchTranslationOutput]
+OutputTranslationModel = Union[YOLOClassifyOutput, PytorchTranslationOutput]
 """Type alias for character translation model outputs, unifying various output format types."""

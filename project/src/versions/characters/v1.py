@@ -7,7 +7,7 @@ using the YOLO (You Only Look Once) object detection model.
 
 import cv2
 from ultralytics import YOLO
-from src.versions.classes import YOLOOutput
+from src.versions.classes import YOLODetectOutput
 
 
 def main(
@@ -16,7 +16,7 @@ def main(
     conf: float = 0.7,
     iou: float = 0.7,
     **_,
-) -> YOLOOutput:
+) -> YOLODetectOutput:
     """
     Detect characters in an image using a YOLO model.
 
@@ -27,7 +27,7 @@ def main(
         iou (float, optional): IoU (Intersection over Union) threshold for NMS. Defaults to 0.45.
 
     Returns:
-        YOLOOutput: Object containing detection results with the following attributes:
+        YOLODetectOutput: Object containing detection results with the following attributes:
             - boxes: List of bounding boxes in [x1, y1, x2, y2] format.
             - class_ids: List of class IDs for each detected object.
             - confidences: List of confidence scores for each detection.
@@ -44,7 +44,7 @@ def main(
     )[0]
 
     if len(prediction.boxes) == 0:
-        return YOLOOutput(
+        return YOLODetectOutput(
             boxes=[],
             class_ids=[],
             confidences=[],
@@ -54,7 +54,7 @@ def main(
     classes_ids = prediction.boxes.cls.int().tolist()
     confidences = prediction.boxes.conf.tolist()
 
-    return YOLOOutput(
+    return YOLODetectOutput(
         boxes=boxes,
         class_ids=classes_ids,
         confidences=confidences,
