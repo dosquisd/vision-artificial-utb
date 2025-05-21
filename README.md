@@ -54,6 +54,78 @@ bash export_to.sh -n <notebook_file.ipynb> -f <html/pdf> -v
 
 A diferencia que en Python, aquí `-n`, `-f` y `-v` no son alias de nada, es decir, representan lo mismo que lo antes mostrado, pero no se pueden utilizar como `--format`, entre otros.
 
+## Contenido del Repositorio
+
+El repositorio está organizado por semanas de clase y contiene un proyecto final. A continuación, se describe el contenido principal:
+
+### Organización Semanal
+
+El contenido está organizado cronológicamente por semanas, cada una contiene las diapositivas, notebooks y tareas correspondientes a los temas vistos:
+
+- **Semana 01**: Introducción al álgebra lineal con NumPy y procesamiento básico de imágenes.
+  - Manipulación de imágenes en escala de grises
+  - Descomposición SVD y reconstrucción de imágenes
+
+- **Semana 02**: Procesamiento de imágenes en Python.
+  - Operaciones básicas con imágenes utilizando OpenCV y NumPy
+
+- **Semana 03**: Sensores y formación de imágenes.
+  - Conceptos teóricos sobre captura y formación de imágenes digitales
+
+- **Semana 04**: Perspectiva y transformaciones geométricas.
+  - Transformaciones de coordenadas y proyecciones
+
+- **Semana 05**: Filtrado lineal y transformaciones 2D.
+  - Convolución y filtros lineales
+  - Transformaciones de coordenadas 2D a 2D
+
+- **Semana 06**: Primer examen parcial.
+
+- **Semana 07**: Histogramas e imágenes binarias.
+  - Ecualización de histograma
+  - Técnicas de umbralización (thresholding)
+
+- **Semana 08**: Análisis de componentes conectados.
+  - Etiquetado de regiones
+  - Extracción de características de objetos
+
+- **Semana 09**: Análisis en el dominio de la frecuencia.
+  - Transformada de Fourier
+  - Filtrado en el dominio de la frecuencia
+
+- **Semana 11**: Segundo examen parcial.
+
+- **Semana 12**: Detección de bordes y escáner de documentos.
+  - Operadores de gradiente (Sobel, Prewitt)
+  - Detector Canny
+
+- **Semana 13**: Detección de esquinas y puntos de interés.
+  - Detector de Harris
+  - Aplicaciones de detección de puntos característicos
+
+- **Semana 14**: Introducción al Machine Learning con imágenes.
+  - Fundamentos de ML aplicado a visión artificial
+
+### Proyecto Final
+
+En la carpeta `project/` se encuentra el proyecto final del curso: un sistema de reconocimiento y traducción de caracteres Braille utilizando técnicas de visión artificial y modelos de aprendizaje profundo.
+
+El proyecto implementa:
+
+- Detección de caracteres Braille en imágenes usando YOLO
+- Traducción de caracteres a texto mediante clasificación (CNN y YOLO)
+- Pipeline completo de procesamiento de imágenes
+
+Para más detalles sobre el proyecto, consulte el [README del proyecto](./project/README.md).
+
+## Herramientas y Utilidades
+
+En la raíz del repositorio se encuentran herramientas para facilitar el trabajo con los notebooks:
+
+- **export_to.py / export_to.sh**: Scripts para exportar notebooks a formatos PDF o HTML
+- **pyproject.toml**: Definición de dependencias del proyecto
+- **uv.lock**: Archivo de bloqueo para garantizar versiones consistentes de las dependencias
+
 <!-- 
 Nota para mi yo del fúturo, y quizás una manera de expresar mis pensamientos, realmente dudo mucho si alguien llegara a leer esto.
 Sé que a este punto en el que me encuentro acerca de mi formación, es normal sentir muchas dudas e incertidumbres del fúturo,
