@@ -134,7 +134,7 @@ def main(
     character_output: OutputCharacterModel = character_model(**characters_kwargs)
     n = len(character_output["boxes"])
 
-    annotator = Annotator(img)
+    annotator = Annotator(image)
     for i in range(n):
         box = character_output["boxes"][i]
         box_int = box.int().tolist()
@@ -164,7 +164,7 @@ def main(
 
         label_text = character_predicted
         if conf is not None:
-            label_text += f" - {conf:.2f}"
+            label_text += f", {conf:.2f}"
 
         # if "confidences" in character_output:
         #     conf = character_output["confidences"][i]
