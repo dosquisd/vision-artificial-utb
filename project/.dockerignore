@@ -1,0 +1,13 @@
+.gitignore
+__pycache__
+*.pyc
+data/*
+notebooks/*
+README.md
+*.png
+*.jpg
+*.jpeg
+*.yaml
+*.yml
+*.csv
+*.svg
