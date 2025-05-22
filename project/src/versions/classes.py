@@ -94,10 +94,16 @@ class PytorchTranslationOutput(TypedDict):
     Output structure for functions that use PyTorch translation models.
 
     Attributes:
-        class_id (int): Predicted class ID for the input.
+        top1_class_id (int): The predicted class ID with the highest confidence (top-1 prediction).
+        top1_confidence (float): The confidence score associated with the top-1 predicted class.
+        top5_class_ids (list[int]): List of the top 5 predicted class IDs, ordered by confidence (descending).
+        top5_confidences (list[float]): List of confidence scores corresponding to each class ID in `top5_class_ids`.
     """
 
-    class_id: int
+    top1_class_id: int
+    top1_confidence: float
+    top5_class_ids: list[int]
+    top5_confidences: list[float]
 
 
 # Type aliases for input/output models

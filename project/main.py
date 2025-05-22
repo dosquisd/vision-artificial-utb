@@ -106,10 +106,10 @@ def main(
         else settings.PROCESSED_CHARACTER_SHAPE
     )
 
-    if not is_translation_input_yolo:
-        class_id_key = "class_id"
-        confidence_key = "confidences"
-    elif top1 or top5_cls_func is None or top5_conf_func is None:
+    # if not is_translation_input_yolo:
+    #     class_id_key = "class_id"
+    #     confidence_key = "confidences"
+    if top1 or top5_cls_func is None or top5_conf_func is None:
         class_id_key = "top1_class_id"
         confidence_key = "top1_confidence"
     else:
@@ -124,7 +124,12 @@ def main(
 
     characters_kwargs["img"] = image
 
-    out: OutputPrediction = {"orig_img": np.array(image), "boxes": [], "character_predicted": [], "confidences": []}
+    out: OutputPrediction = {
+        "orig_img": np.array(image),
+        "boxes": [],
+        "character_predicted": [],
+        "confidences": [],
+    }
 
     character_output: OutputCharacterModel = character_model(**characters_kwargs)
     n = len(character_output["boxes"])
@@ -150,12 +155,8 @@ def main(
         if not isinstance(class_id, list):
             class_id = [class_id]
 
-        if is_translation_input_yolo:
-            conf = translation_output[confidence_key]
-            conf = [conf] if not isinstance(conf, list) else conf
-        else:
-            conf = [None]
-
+        conf = translation_output[confidence_key]
+        conf = [conf] if not isinstance(conf, list) else conf
         class_id = top5_cls_func(class_id, conf)
         conf = top5_conf_func(class_id, conf)
 
@@ -182,6 +183,7 @@ def main(
 if __name__ == "__main__":
     img = cv2.imread("./data/processed/test/images/34_1.jpg")
 
+    """
     # Using all yolo models
     characters_kwargs = {
         "yolo_model_path": "./models/runs/detect/train2/weights/best.pt",
@@ -205,8 +207,8 @@ if __name__ == "__main__":
         ),
         "top5_conf_func": lambda cls_id, conf: max(conf),
     }
-
     """
+
     # Using yolo for characters and pytorch for translation
     characters_kwargs: InputCharacterModel = {
         "yolo_model_path": "./models/runs/detect/train2/weights/best.pt",
@@ -221,8 +223,7 @@ if __name__ == "__main__":
     character_model_version = "v1"
     translation_model_version = "v1"
 
-    extra_kwargs = {}
-    """
+    extra_kwargs = {"top1": True}
 
     output = main(
         image=img,

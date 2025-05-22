@@ -33,8 +33,11 @@ def main(
         device (str, optional): Device to run inference on ('cpu' or 'cuda'). Defaults to "cpu".
 
     Returns:
-        PytorchTranslationOutput: Object containing translation result with the following attribute:
-            - class_id: Predicted class ID for the input character.
+        PytorchTranslationOutput: Object containing translation result with the following attributes:
+        top1_class_id (int): The predicted class ID with the highest confidence (top-1 prediction).
+        top1_confidence (float): The confidence score associated with the top-1 predicted class.
+        top5_class_ids (list[int]): List of the top 5 predicted class IDs, ordered by confidence (descending).
+        top5_confidences (list[float]): List of confidence scores corresponding to each class ID in `top5_class_ids`.
     """
     checkpoint = torch.load(translation_model_path, map_location=device)
     net.load_state_dict(checkpoint["model_state_dict"])
@@ -43,6 +46,19 @@ def main(
     character = transform(img)
     character = character[None, :, :, :]
     output = net(character)
-    _, label_prediction = torch.max(output, 1)
 
-    return PytorchTranslationOutput(class_id=label_prediction)
+    probabilities = output.detach().cpu().numpy()[0]
+
+    top1_idx = int(probabilities.argmax())
+    top1_confidence = float(probabilities[top1_idx])
+    
+    top5_indices = probabilities.argsort()[-5:][::-1]
+    top5_confidences = [float(probabilities[idx]) for idx in top5_indices]
+    top5_class_ids = [int(idx) for idx in top5_indices]
+
+    return PytorchTranslationOutput(
+        top1_class_id=top1_idx,
+        top1_confidence=top1_confidence,
+        top5_class_ids=top5_class_ids,
+        top5_confidences=top5_confidences
+    )
