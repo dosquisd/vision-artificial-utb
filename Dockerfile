@@ -1,50 +1,44 @@
-# Stage 1: Builder stage
-FROM python:3.12-slim-bookworm AS builder
-
-WORKDIR /app/
-
-# Install uv
-COPY --from=ghcr.io/astral-sh/uv:0.6.16 /uv /uvx /bin/
-
-# Configure UV
-ENV UV_COMPILE_BYTECODE=1
-ENV UV_LINK_MODE=copy
-
-# Create a virtual environment
-RUN python -m venv /app/.venv
-ENV PATH="/app/.venv/bin:$PATH"
-
-# Install dependencies
-COPY ./pyproject.toml ./uv.lock /app/
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-install-project
-
-# Install the project and its dependencies
-COPY ./project/server.py ./project/main.py /app/
-COPY ./project/src/ /app/src/
-COPY ./project/models/ /app/models/
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync
-
-# Stage 2: Final lightweight image
 FROM python:3.12-slim-bookworm
 
-WORKDIR /app/
-
-# Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Copy only the necessary files from the builder stage
-COPY --from=builder /app/.venv /app/.venv
-COPY --from=builder /app/server.py /app/main.py /app/
-COPY --from=builder /app/src/ /app/src/
-COPY --from=builder /app/models/ /app/models/
+WORKDIR /app/
 
-# Remove pip cache and other unnecessary files
-RUN find /app/.venv -name "__pycache__" -type d -exec rm -rf {} +
+RUN apt-get update && apt-get install -y \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv
+# Ref: https://docs.astral.sh/uv/guides/integration/docker/#installing-uv
+COPY --from=ghcr.io/astral-sh/uv:0.6.16 /uv /uvx /bin/
+
+# Set uv options for better performance
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
+
+# Copy only requirements file first to leverage Docker caching
+COPY ./requirements-docker.txt /app/
+
+# Create virtual environment and install dependencies with caching
+RUN uv venv .venv -p python3.12
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv pip install -r requirements-docker.txt
+
+# Copy only the necessary application files
+COPY ./project/src/ /app/src/
+COPY ./project/models/ /app/models/
+COPY ./project/server.py ./project/main.py ./project/.env /app/
+
+RUN yolo settings datasets_dir=/app/models
 
 EXPOSE 8000
 
-CMD ["uvicorn", "server:app", "--workers", "4", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]
