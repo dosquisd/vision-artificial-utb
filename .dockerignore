@@ -1,0 +1,17 @@
+.gitignore
+**/__pycache__
+*.pyc
+semana*
+project/data/*
+project/notebooks/*
+
+project/models/README.md
+project/models/runs/**/**/*.png
+project/models/runs/**/**/*.jpg
+project/models/runs/**/**/*.jpeg
+project/models/runs/**/**/*.yaml
+project/models/runs/**/**/*.yml
+project/models/runs/**/**/*.csv
+project/models/runs/**/**/*.svg
+
+project/src/modeling/*
