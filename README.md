@@ -123,16 +123,24 @@ Para más detalles sobre el proyecto, consulte el [README del proyecto](./projec
 El proyecto incluye un contenedor Docker que permite ejecutar un servidor web con una interfaz sencilla para consumir la API de traducción de Braille. Para construir y ejecutar el contenedor, siga estos pasos:
 
 1. Construir la imagen Docker:
+
 ```console
-docker build -t braille-translator:0.1 .
+DOCKER_BUILDKIT=1 docker build -t braille-translator:0.1 .
 ```
 
 2. Ejecutar el contenedor:
+
 ```console
-docker run braille-translator:0.1
+docker run -p 8000:8000 braille-translator:0.1
 ```
 
-Este contenedor proporciona una página web sencilla que consume la API de traducción de caracteres Braille previamente desarrollada, facilitando su uso sin necesidad de instalar todas las dependencias localmente.
+Este contenedor proporciona una página web sencilla que consume la API de traducción de caracteres Braille previamente desarrollada, facilitando su uso sin necesidad de instalar todas las dependencias localmente. Si se desea colocarle un nombre en concreto al contenedor, bastaría con agregar el argument `--name ${NOMBRE}`.
+
+Sabemos que realizar los anteriores comandos para crear la imagen de Docker es muy pesado y demorado en tiempo, por tanto, la imagen del servidor se puede encontrar en Dockerhub, y se puede descargar con el siguiente comando
+
+```console
+docker pull dosquisd/braille-translator:0.1
+```
 
 ## Herramientas y Utilidades
 
