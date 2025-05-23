@@ -30,7 +30,7 @@ COPY ./requirements-docker.txt /app/
 # Create virtual environment and install dependencies with caching
 RUN uv venv .venv -p python3.12
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv pip install -r requirements-docker.txt
+    uv pip install --no-cache-dir -r requirements-docker.txt
 
 # Copy only the necessary application files
 COPY ./project/src/ /app/src/
