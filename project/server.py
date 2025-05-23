@@ -56,7 +56,7 @@ def translate_braille(
     Process an image to detect and translate Braille characters.
     """
     if isinstance(image, bytes):
-        image_cv2 = cv2.imdecode(np.frombuffer(image, np.uint8), cv2.IMREAD_COLOR)
+        image_cv2 = cv2.imdecode(np.frombuffer(image, np.uint8), cv2.IMREAD_COLOR_BGR)
 
     if character_model_version not in VERSIONS["characters"]:
         return HTTPException(
