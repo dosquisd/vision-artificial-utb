@@ -21,7 +21,7 @@ import numpy as np
 from ultralytics.utils.plotting import Annotator
 
 from src.config import settings
-from src.versions import VERSIONS, utils
+from src.versions import utils, version_manager
 from src.versions.classes import (
     YOLOInput,
     InputTranslationModel,
@@ -57,7 +57,7 @@ def main(
     for both detection and translation.
 
     Args:
-        image (cv2.Mat): Input image containing Braille characters to process
+        image (cv2.Mat): Input image containing Braille characters to process. Color space BGR.
         character_model_version (str): Version of the character detection model to use
         translation_model_version (str): Version of the translation model to use
         characters_kwargs (InputCharacterModel): Configuration parameters for the character model
@@ -77,6 +77,7 @@ def main(
         Union[OutputPrediction, None]: Dictionary containing detection results and predicted characters,
                                       or None if invalid configuration is provided
     """
+    # Valid parameters and prepare function for its correct performance
     is_character_input_yolo = utils.is_typed_dict_instance(characters_kwargs, YOLOInput)
     is_translation_input_yolo = utils.is_typed_dict_instance(
         translation_kwargs, YOLOInput
@@ -96,19 +97,6 @@ def main(
     if not is_character_input_yolo and is_model_path_yolo:
         return None
 
-    character_model = VERSIONS["characters"][character_model_version]
-    translation_model = VERSIONS["translation"][translation_model_version]
-
-    image = resize_image(image, settings.PROCESSED_IMAGE_SHAPE)["padded_img"]
-    character_shape = (
-        settings.PROCESSED_CHARACTER_SHAPE_YOLO
-        if is_translation_input_yolo
-        else settings.PROCESSED_CHARACTER_SHAPE
-    )
-
-    # if not is_translation_input_yolo:
-    #     class_id_key = "class_id"
-    #     confidence_key = "confidences"
     if top1 or top5_cls_func is None or top5_conf_func is None:
         class_id_key = "top1_class_id"
         confidence_key = "top1_confidence"
@@ -122,8 +110,7 @@ def main(
     if top5_conf_func is None:
         top5_conf_func = lambda cls_id, conf: conf[0] if conf[0] is not None else None  # noqa: E731
 
-    characters_kwargs["img"] = image
-
+    # Prepare output
     out: OutputPrediction = {
         "orig_img": np.array(image),
         "boxes": [],
@@ -131,26 +118,57 @@ def main(
         "confidences": [],
     }
 
+    # Attributes for character model
+    character_params = {"model_type": "characters", "version": character_model_version}
+    character_model = version_manager.get_model(**character_params)
+    character_config = version_manager.get_config(**character_params)
+    character_shape = character_config.shape
+    character_color_space = character_config.color_space
+
+    # Attributes for translation model
+    translation_params = {
+        "model_type": "translation",
+        "version": translation_model_version,
+    }
+    translation_model = version_manager.get_model(**translation_params)
+    translation_config = version_manager.get_config(**translation_params)
+    translation_shape = translation_config.shape
+    translation_color_space = translation_config.color_space
+
+    # Preprocess image for character model
+    image = resize_image(image, character_shape)["padded_img"]
+
+    # Add more cases if needed
+    if character_color_space == "RGB":
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    characters_kwargs["img"] = image
+
+    # Make the prediction for character model
     character_output: OutputCharacterModel = character_model(**characters_kwargs)
     n = len(character_output["boxes"])
-
     annotator = Annotator(image)
     for i in range(n):
         box = character_output["boxes"][i]
         box_int = box.int().tolist()
+
+        # Take character image and prepare it for its prediction
         character_img = image[box_int[1] : box_int[3], box_int[0] : box_int[2]]
         filtered_img = filter(
-            character_img, radius=radius, amount=amount, shape=character_shape
+            character_img, radius=radius, amount=amount, shape=translation_shape
         )
 
-        if is_translation_input_yolo:
-            filtered_img = cv2.cvtColor(filtered_img, cv2.COLOR_GRAY2BGR)
+        # Add more color space conversions here if needed
+        if translation_color_space == "RGB":
+            filtered_img = cv2.cvtColor(filtered_img, cv2.COLOR_GRAY2RGB)
         translation_kwargs["img"] = filtered_img
 
+        # Make the prediction
         translation_output: OutputTranslationModel = translation_model(
             **translation_kwargs
         )
 
+        # Take top1 id or top5 ids made in the previous prediction
         class_id = translation_output[class_id_key]
         if not isinstance(class_id, list):
             class_id = [class_id]
@@ -166,14 +184,11 @@ def main(
         if conf is not None:
             label_text += f", {conf:.2f}"
 
-        # if "confidences" in character_output:
-        #     conf = character_output["confidences"][i]
-        #     label_text = f"{conf:.2f} - {label_text}"
-
         out["boxes"].append(box)
         out["character_predicted"].append(character_predicted)
         out["confidences"].append(conf)
 
+        # Draw a box for each character and its respective text
         annotator.box_label(box, label_text)
 
     out["result_img"] = annotator.result()
@@ -183,7 +198,6 @@ def main(
 if __name__ == "__main__":
     img = cv2.imread("./data/processed/test/images/34_1.jpg")
 
-    """
     # Using all yolo models
     characters_kwargs = {
         "yolo_model_path": "./models/runs/detect/train2/weights/best.pt",
@@ -207,8 +221,8 @@ if __name__ == "__main__":
         ),
         "top5_conf_func": lambda cls_id, conf: max(conf),
     }
-    """
 
+    """
     # Using yolo for characters and pytorch for translation
     characters_kwargs: InputCharacterModel = {
         "yolo_model_path": "./models/runs/detect/train2/weights/best.pt",
@@ -223,7 +237,14 @@ if __name__ == "__main__":
     character_model_version = "v1"
     translation_model_version = "v1"
 
-    extra_kwargs = {"top1": True}
+    extra_kwargs = {
+        "top1": False,
+        "top5_cls_func": lambda cls_id, conf: int(
+            sum((i * conf_i) for i, conf_i in zip(cls_id, conf))
+        ),
+        "top5_conf_func": lambda cls_id, conf: max(conf),
+    }
+    """
 
     output = main(
         image=img,
@@ -236,6 +257,7 @@ if __name__ == "__main__":
 
     print("Presione cualquier tecla para salir...")
     result = output["result_img"]
+    result = cv2.cvtColor(result, cv2.COLOR_RGB2BGR)
 
     cv2.imshow("Result", result)
     cv2.waitKey(0)
