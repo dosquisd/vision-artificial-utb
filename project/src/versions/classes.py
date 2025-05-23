@@ -7,7 +7,10 @@ of different detection and translation models used in the project.
 
 import numpy as np
 from torch import Tensor
-from typing import TypedDict, Union
+from typing import TypedDict, Union, Literal
+
+
+ModelFormats = Literal["onnx", "yolo"]
 
 
 class OutputPrediction(TypedDict):
@@ -34,11 +37,15 @@ class YOLOInput(TypedDict):
 
     Attributes:
         yolo_model_path (str): Path to the YOLO model weights.
+        version (str): Version of the YOLO model.
+        format (ModelFormats): Format of the model, either 'onnx' or 'yolo'.
         conf (float): Confidence threshold for detections.
         iou (float): IoU (Intersection over Union) threshold for NMS.
     """
 
     yolo_model_path: str
+    version: str
+    format: ModelFormats
     conf: float
     iou: float
 
@@ -80,12 +87,13 @@ class PytorchTranslationInput(TypedDict):
     Input structure for functions that use PyTorch translation models.
 
     Attributes:
-        character (cv2.Mat): Input character image to be translated.
         translation_model_path (str): Path to the trained PyTorch model checkpoint.
+        version (str): Version of the translation model.
         device (str): Device to run inference on ('cpu' or 'cuda').
     """
 
     translation_model_path: str
+    version: str
     device: str
 
 

@@ -1,3 +1,5 @@
+# TODO: Make functional onnx models
+
 """
 Main module for Braille character detection and translation.
 
@@ -39,8 +41,6 @@ from typing import Union
 def main(
     *,
     image: cv2.Mat,
-    character_model_version: str,
-    translation_model_version: str,
     characters_kwargs: InputCharacterModel,
     translation_kwargs: InputTranslationModel,
     top1: bool = True,
@@ -58,8 +58,6 @@ def main(
 
     Args:
         image (cv2.Mat): Input image containing Braille characters to process. Color space BGR.
-        character_model_version (str): Version of the character detection model to use
-        translation_model_version (str): Version of the translation model to use
         characters_kwargs (InputCharacterModel): Configuration parameters for the character model
         translation_kwargs (InputTranslationModel): Configuration parameters for the translation model
         top1 (bool, optional): Flag to indicate whether to use top-1 prediction for Translation Model. \
@@ -78,6 +76,13 @@ def main(
                                       or None if invalid configuration is provided
     """
     # Valid parameters and prepare function for its correct performance
+    character_model_version = characters_kwargs.get("version", "v1")
+    translation_model_version = translation_kwargs.get("version", "v2")
+
+    # Just in case the user doesn't provide the version
+    characters_kwargs["version"] = character_model_version
+    translation_kwargs["version"] = translation_model_version
+
     is_character_input_yolo = utils.is_typed_dict_instance(characters_kwargs, YOLOInput)
     is_translation_input_yolo = utils.is_typed_dict_instance(
         translation_kwargs, YOLOInput
@@ -200,19 +205,20 @@ if __name__ == "__main__":
 
     # Using all yolo models
     characters_kwargs = {
-        "yolo_model_path": "./models/runs/detect/train2/weights/best.pt",
+        "yolo_model_path": "./models/runs/detect/train2/weights/best.onnx",
+        "version": "v1",
+        "format": "onnx",
         "conf": 0.7,
         "iou": 0.7,
     }
 
     translation_kwargs = {
         "yolo_model_path": "./models/runs/translation/train5-yolo/weights/best.pt",
+        "version": "v2",
+        "format": "yolo",
         "conf": 0.0,
         "iou": 0.7,
     }
-
-    character_model_version = "v1"
-    translation_model_version = "v2"
 
     extra_kwargs = {
         "top1": False,
@@ -226,16 +232,16 @@ if __name__ == "__main__":
     # Using yolo for characters and pytorch for translation
     characters_kwargs: InputCharacterModel = {
         "yolo_model_path": "./models/runs/detect/train2/weights/best.pt",
+        "version": "v1",
+        "format": "yolo",
         "conf": 0.7,
         "iou": 0.7,
     }
     translation_kwargs: InputTranslationModel = {
         "translation_model_path": "./models/runs/translation/train4/best_model_epoch92.pth",
+        "version": "v1",
         "device": "cpu",
     }
-
-    character_model_version = "v1"
-    translation_model_version = "v1"
 
     extra_kwargs = {
         "top1": False,
@@ -248,8 +254,6 @@ if __name__ == "__main__":
 
     output = main(
         image=img,
-        character_model_version=character_model_version,
-        translation_model_version=translation_model_version,
         characters_kwargs=characters_kwargs,
         translation_kwargs=translation_kwargs,
         **extra_kwargs,

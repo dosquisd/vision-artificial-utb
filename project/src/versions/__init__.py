@@ -6,8 +6,6 @@ pipelines, allowing easy switching between implementation versions.
 It provides a registry of available pipeline versions through the VERSIONS dictionary.
 """
 
-from src.versions.characters import characterv1
-from src.versions.translation import translationv1, translationv2
 import src.versions.classes as classes
 import src.versions.utils as utils
 
@@ -42,7 +40,7 @@ class VersionManager:
     def __init__(self):
         self._versions = self._load_versions()
 
-    def _load_versions(self) -> Dict[str, ModelConfig]:
+    def _load_versions(self) -> Dict[str, Dict[str, ModelConfig]]:
         """Load versions from the specified modules."""
         versions = {
             "translation": {
@@ -70,25 +68,43 @@ class VersionManager:
         }
         return versions
 
-    def get_model(self, model_type: str, version: str) -> callable:
+    def get_model(
+        self, model_type: str, version: str, format: classes.ModelFormats = "yolo"
+    ) -> callable:
         """Dynamically load and return a model instance."""
         config = self._versions[model_type][version]
         module = importlib.import_module(config.module_path)
-        model_func = getattr(module, config.function_name)
+        function_name = f"{config.function_name}_{format}"
+
+        try:
+            model_func = getattr(module, function_name)
+        except Exception:
+            model_func = getattr(module, config.function_name)
+
         return model_func
 
-    def get_config(self, model_type: str, version: str) -> ModelConfig:
+    def get_config(self, model_type: str, version: str, **_) -> ModelConfig:
         """Get the configuration for a specific model version."""
         return self._versions[model_type][version]
+    
+    def get_extention(self, format: classes.ModelFormats) -> str:
+        """Get the file extension for a specific model format."""
+        if format == "onnx":
+            return ".onnx"
+        elif format == "yolo":
+            return ".pt"
+        else:
+            raise ValueError(f"Unsupported format: {format}")
+
+    def list_versions(self, model_type: str) -> list:
+        """List all available versions for a specific model type."""
+        return list(self._versions[model_type].keys())
 
 
 version_manager = VersionManager()
 
 
 __all__ = [
-    "characterv1",
-    "translationv1",
-    "translationv2",
     "classes",
     "utils",
     "version_manager",
