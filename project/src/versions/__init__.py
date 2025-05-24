@@ -80,6 +80,10 @@ class VersionManager:
     def get_config(self, model_type: str, version: str) -> ModelConfig:
         """Get the configuration for a specific model version."""
         return self._versions[model_type][version]
+    
+    def list_versions(self, model_type: str) -> list:
+        """List all available versions for a specific model type."""
+        return list(self._versions[model_type].keys())
 
 
 version_manager = VersionManager()
