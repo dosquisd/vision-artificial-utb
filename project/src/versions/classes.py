@@ -34,11 +34,13 @@ class YOLOInput(TypedDict):
 
     Attributes:
         yolo_model_path (str): Path to the YOLO model weights.
+        version (str): Version of the YOLO model.
         conf (float): Confidence threshold for detections.
         iou (float): IoU (Intersection over Union) threshold for NMS.
     """
 
     yolo_model_path: str
+    version: str
     conf: float
     iou: float
 
@@ -80,12 +82,13 @@ class PytorchTranslationInput(TypedDict):
     Input structure for functions that use PyTorch translation models.
 
     Attributes:
-        character (cv2.Mat): Input character image to be translated.
         translation_model_path (str): Path to the trained PyTorch model checkpoint.
+        version (str): Version of the translation model.
         device (str): Device to run inference on ('cpu' or 'cuda').
     """
 
     translation_model_path: str
+    version: str
     device: str
 
 
