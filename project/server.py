@@ -67,7 +67,7 @@ def translate_braille(
 
     if character_model_version == "v1":
         characters_kwargs: classes.YOLOInput = {
-            "yolo_model_path": "./models/runs/detect/train2/weights/best.pt",
+            "yolo_model_path": "./models/runs/detect/train3/weights/best.pt",
             "version": character_model_version,
             "conf": 0.7,
             "iou": 0.7,
@@ -83,7 +83,7 @@ def translate_braille(
 
     if translation_model_version == "v2":
         translation_kwargs: classes.YOLOInput = {
-            "yolo_model_path": "./models/runs/translation/train5-yolo/weights/best.pt",
+            "yolo_model_path": "./models/runs/translation/train6-yolo/weights/best.pt",
             "version": translation_model_version,
             "conf": 0.7,
             "iou": 0.7,
