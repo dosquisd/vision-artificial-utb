@@ -35,10 +35,12 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Copy only the necessary application files
 COPY ./project/src/ /app/src/
 COPY ./project/models/ /app/models/
+COPY ./project/static/ /app/static/
 COPY ./project/server.py ./project/main.py ./project/.env /app/
 
 RUN yolo settings datasets_dir=/app/models
 
+# Expose the port the app runs on
 EXPOSE 8000
 
 CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]
