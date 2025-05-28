@@ -4,7 +4,7 @@
 
 Este repositorio es únicamente utilizado para guardar todas las tareas, proyectos, diapositivas, etc., hecho en el curso, almacenar todo en un solo lugar, para luego ser consultado en otro momento.
 
-La materia es dada por el profesor [Fernando Quintero](https://github.com/fquinterov), y el repositorio oficial del curso está [aquí](https://github.com/agmarrugo/computer-vision-utb).
+La materia es dada por el profesor [Fernando Quintero](https://github.com/fquinterov), y el repositorio oficial del curso están en los siguientes enlaces: por el profesor (vicerrector de la UTB a la hora de estar escribiendo esto) [Andres](https://github.com/agmarrugo/computer-vision-utb) y por el profesor [Fernando](https://github.com/fquinterov/computer_vision_course/).
 
 ## Instalar
 
@@ -108,6 +108,9 @@ El contenido está organizado cronológicamente por semanas, cada una contiene l
 - **Semana 14**: Introducción al Machine Learning con imágenes.
   - Fundamentos de ML aplicado a visión artificial
 
+- **Semana 16**: Regresión logistica.
+  - Tutorial de cómo uno de tantos algoritmos en ML: Regresión Logistica.
+
 ### Proyecto Final
 
 En la carpeta `project/` se encuentra el proyecto final del curso: un sistema de reconocimiento y traducción de caracteres Braille utilizando técnicas de visión artificial y modelos de aprendizaje profundo.
@@ -124,16 +127,16 @@ Para más detalles sobre el proyecto, consulte el [README del proyecto](./projec
 
 El proyecto incluye un contenedor Docker que permite ejecutar un servidor web con una interfaz sencilla para consumir la API de traducción de Braille. Para construir y ejecutar el contenedor, siga estos pasos:
 
-1. Construir la imagen Docker:
+1. Construir la imagen Docker (`DOCKER_BUILDKIT=1` es prescindible):
 
 ```console
-DOCKER_BUILDKIT=1 docker build -t braille-translator:0.1 .
+DOCKER_BUILDKIT=1 docker build -t braille-translator:latest .
 ```
 
 2. Ejecutar el contenedor:
 
 ```console
-docker run -p 8000:8000 braille-translator:0.1
+docker run -p 8000:8000 braille-translator:latest
 ```
 
 Este contenedor proporciona una página web sencilla que consume la API de traducción de caracteres Braille previamente desarrollada, facilitando su uso sin necesidad de instalar todas las dependencias localmente. Si se desea colocarle un nombre en concreto al contenedor, bastaría con agregar el argument `--name ${NOMBRE}`.
@@ -141,7 +144,7 @@ Este contenedor proporciona una página web sencilla que consume la API de tradu
 Sabemos que realizar los anteriores comandos para crear la imagen de Docker es muy pesado y demorado en tiempo, por tanto, la imagen del servidor se puede encontrar en Dockerhub, y se puede descargar con el siguiente comando
 
 ```console
-docker pull dosquisd/braille-translator:0.1
+docker pull dosquisd/braille-translator:latest
 ```
 
 ## Herramientas y Utilidades
