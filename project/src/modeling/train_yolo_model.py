@@ -32,3 +32,14 @@ def main(dataset: str, basemodel: str, **kwargs_training: Any) -> None:
         imgsz=settings.PROCESSED_IMAGE_SHAPE[::-1],
         **kwargs_training,
     )
+
+
+if __name__ == "__main__":
+    main(
+        dataset="./data.yaml",
+        basemodel="./models/yolo11n.pt",
+        project="./models/runs/detect",
+        workers=5,
+        device=0,
+        single_cls=True,
+    )
