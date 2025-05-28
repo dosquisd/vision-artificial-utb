@@ -49,3 +49,19 @@ def main(
         # optimizer="Adam",
         # device=0,
     )
+
+
+if __name__ == "__main__":
+    main(
+        dataset="./data/processed/kaggle/yolo",
+        project="./models/runs/translation",
+        basemodel="./models/yolo11n-cls.pt",
+        workers=5,
+        device=0,
+        lr0=0.001,
+        dropout=0.2,
+        optimizer="Adam",
+        hsv_h=0.1,
+        hsv_s=0.8,
+        auto_augment="augmix",
+    )

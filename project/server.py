@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 
 from main import main
+from src.config import settings
 from src.versions import version_manager, classes
 
 from typing import Annotated
@@ -13,13 +14,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-origins = [
-    "http://localhost",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,12 +45,10 @@ async def root() -> dict:
 @app.post("/braille")
 def translate_braille(
     image: Annotated[bytes, File()],
-    character_model_version: str = "v1",
-    translation_model_version: str = "v2",
-    character_model_format: classes.ModelFormats = "yolo",
-    translation_model_format: classes.ModelFormats = "yolo",
+    character_model_version: str,
+    translation_model_version: str,
     top1: bool = True,
-) -> dict:
+):
     """
     Process an image to detect and translate Braille characters.
     """
@@ -70,17 +65,14 @@ def translate_braille(
             status_code=404, detail="Translation model version not found"
         )
 
-    ext_character = version_manager.get_extention(character_model_format)
-    ext_translation = version_manager.get_extention(translation_model_format)
-
     if character_model_version == "v1":
         characters_kwargs: classes.YOLOInput = {
-            "yolo_model_path": f"./models/runs/detect/train2/weights/best{ext_character}",
+            "yolo_model_path": "./models/runs/detect/train3/weights/best.pt",
             "version": character_model_version,
-            "format": character_model_format,
             "conf": 0.7,
             "iou": 0.7,
         }
+
 
     if translation_model_version == "v1":
         translation_kwargs: classes.PytorchTranslationInput = {
@@ -91,10 +83,9 @@ def translate_braille(
 
     if translation_model_version == "v2":
         translation_kwargs: classes.YOLOInput = {
-            "yolo_model_path": f"./models/runs/translation/train5-yolo/weights/best{ext_translation}",
+            "yolo_model_path": "./models/runs/translation/train6-yolo/weights/best.pt",
             "version": translation_model_version,
-            "format": translation_model_format,
-            "conf": 0.0,
+            "conf": 0.7,
             "iou": 0.7,
         }
 
@@ -115,6 +106,6 @@ def translate_braille(
         raise HTTPException(status_code=500, detail="Error processing the image")
 
     result_img = result["result_img"]
-    _, img_encoded = cv2.imencode(".png", result_img)
+    _, img_encoded = cv2.imencode('.png', result_img)
 
     return Response(content=img_encoded.tobytes(), media_type="image/png")

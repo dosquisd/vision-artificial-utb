@@ -1,5 +1,3 @@
-# TODO: Make functional onnx models
-
 """
 Main module for Braille character detection and translation.
 
@@ -76,12 +74,10 @@ def main(
                                       or None if invalid configuration is provided
     """
     # Valid parameters and prepare function for its correct performance
-    character_model_version = characters_kwargs.get("version", "v1")
-    translation_model_version = translation_kwargs.get("version", "v2")
+    character_model_version = characters_kwargs["version"]
+    translation_model_version = translation_kwargs["version"]
 
-    # Just in case the user doesn't provide the version
-    characters_kwargs["version"] = character_model_version
-    translation_kwargs["version"] = translation_model_version
+    print(character_model_version, translation_model_version)
 
     is_character_input_yolo = utils.is_typed_dict_instance(characters_kwargs, YOLOInput)
     is_translation_input_yolo = utils.is_typed_dict_instance(
@@ -205,9 +201,8 @@ if __name__ == "__main__":
 
     # Using all yolo models
     characters_kwargs = {
-        "yolo_model_path": "./models/runs/detect/train2/weights/best.onnx",
+        "yolo_model_path": "./models/runs/detect/train2/weights/best.pt",
         "version": "v1",
-        "format": "onnx",
         "conf": 0.7,
         "iou": 0.7,
     }
@@ -215,7 +210,6 @@ if __name__ == "__main__":
     translation_kwargs = {
         "yolo_model_path": "./models/runs/translation/train5-yolo/weights/best.pt",
         "version": "v2",
-        "format": "yolo",
         "conf": 0.0,
         "iou": 0.7,
     }
@@ -233,7 +227,6 @@ if __name__ == "__main__":
     characters_kwargs: InputCharacterModel = {
         "yolo_model_path": "./models/runs/detect/train2/weights/best.pt",
         "version": "v1",
-        "format": "yolo",
         "conf": 0.7,
         "iou": 0.7,
     }
