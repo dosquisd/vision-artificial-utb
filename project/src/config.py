@@ -42,6 +42,8 @@ class Settings(BaseSettings):
         env_file=".env", env_ignore_empty=True, extra="ignore"
     )
 
+    CORS_ORIGINS: Annotated[list[str] | str, BeforeValidator(split_list)]
+
     # It's recommended to use ABSOLUTE PATH in the .env file
     SAVE_PATH: str
 

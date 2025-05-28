@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 
 from main import main
+from src.config import settings
 from src.versions import version_manager, classes
 
 from typing import Annotated
@@ -13,19 +14,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-origins = [
-    "http://localhost",
-    "http://localhost:8080",
-    "http://localhost:5500",
-    "http://127.0.0.1",
-    "http://127.0.0.1:8080",
-    "http://127.0.0.1:5500",
-    "file://",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
