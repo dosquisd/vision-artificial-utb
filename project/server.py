@@ -7,9 +7,10 @@ from src.versions import version_manager, classes
 
 from typing import Annotated
 from fastapi import FastAPI, File
-from fastapi.responses import Response
+from fastapi.responses import Response, FileResponse
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 
 app = FastAPI()
@@ -21,6 +22,20 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount static files (the web interface)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+@app.get("/")
+async def root():
+    """Serve the main web interface"""
+    return FileResponse('static/index.html')
+
+
+@app.get("/api")
+async def api_root() -> dict:
+    return {"message": "Hello World", "status": "API is running"}
 
 
 def top5_cls_func(cls_id: list[int], conf: list[float]) -> int:
@@ -35,11 +50,6 @@ def top5_conf_func(cls_id: list[int], conf: list[float]) -> float:
     Function to apply top-5 results in order to get the resultant confidence.
     """
     return max(conf)
-
-
-@app.get("/")
-async def root() -> dict:
-    return {"message": "Hello World"}
 
 
 @app.post("/braille")
